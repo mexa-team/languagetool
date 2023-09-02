@@ -1,13 +1,86 @@
 # LanguageTool Change Log
 
-## 6.1-SNAPSHOT (release planned for 2023-03-28)
+## 6.2 (2023-07-02)
 
-...
+#### Catalan
+  * added and improved rules
+
+#### Dutch
+  * added and improved rules
+
+#### English
+  * added and improved rules
+  * updated en_GB spellchecker dictionary from https://github.com/marcoagpinto/aoo-mozilla-en-dict (Version 2023.06.01, v.3.2.1)
+
+#### French
+  * added and improved rules
+
+#### German
+  * added and improved rules
+  * extended dictionary
+
+#### Portuguese
+  * added and improved rules
+  * added words and POS data
+  * fixed tons of false positives
+
+#### Spanish
+  * added and improved rules
+
+#### Ukrainian
+  * new words in the POS dictionary
+  * new rules
+
+There were also minor rule improvements for Galician, Belarusian, Esperanto, Arabic,
+and Russian.
+
+
+
+## 6.1 (2023-03-28)
+
+#### Catalan
+  * added and improved rules
+  * updated dictionary (catalan-pos-dict-2.22)
+
+#### Dutch
+  * improved and cleaned up rules
+
+#### English
+  * added and improved rules
+  * updated en_GB spellchecker dictionary from https://github.com/marcoagpinto/aoo-mozilla-en-dict (Version 2023.03.01, v.3.1.8)
+
+#### French
+  * added and improved rules
+
+#### German
+  * added and improved rules
+  * extended dictionary
+
+#### Polish
+  * small rule updates
+
+#### Portuguese
+  * added and improved rules
+  * added words and POS data
+  * fixed tons of false positives
 
 #### Russian
-  * added and improved rules
+  * added and improved xml and java rules 
   * improved disambiguation
+  * fix a lot of false positives
   * added words and POS data
+  * added chunker rules
+  * some xml grammar rules uses a chunker now
+
+#### Spanish
+  * added and improved rules
+  * updated dictionary (spanish-pos-dict-2.0)
+
+#### Ukrainian
+  * new words in the POS dictionary
+  * improved tokenization, tagging, and disambiguation
+  * new rules
+
 
 
 ## 6.0 (released 2022-12-29)

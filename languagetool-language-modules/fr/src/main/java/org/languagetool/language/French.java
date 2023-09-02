@@ -61,10 +61,14 @@ public class French extends Language implements AutoCloseable {
 
   @Override
   public String[] getCountries() {
-    return new String[]{"FR", "", "BE", "CH", "CA", "LU", "MC", "CM",
-            "CI", "HT", "ML", "SN", "CD", "MA", "RE"};
+    return new String[]{"FR", "", "LU", "MC", "CM",  "CI", "HT", "ML", "SN", "CD", "MA", "RE"};
+    //  "BE", "CH", "CA",
   }
 
+  @Override
+  public Language getDefaultLanguageVariant() {
+    return Languages.getLanguageForShortCode("fr");
+  }
   @NotNull
   @Override
   public Tagger createDefaultTagger() {
@@ -120,7 +124,7 @@ public class French extends Language implements AutoCloseable {
             new CompoundRule(messages, this, userConfig),
             new QuestionWhitespaceStrictRule(messages, this),
             new QuestionWhitespaceRule(messages, this),
-            new SimpleReplaceRule(messages),
+            new SimpleReplaceRule(messages, this),
             new FrenchRepeatedWordsRule(messages)
     );
   }
@@ -232,9 +236,7 @@ public class French extends Language implements AutoCloseable {
 
   @Override
   protected int getPriorityForId(String id) {
-    switch (id) { 
-      case "FR_COMPOUNDS": return 500; // greater than agreement rules
-      case "FR_SIMPLE_REPLACE": return 150;
+    switch (id) {
       case "AGREEMENT_EXCEPTIONS": return 100; // greater than D_N
       case "EXPRESSIONS_VU": return 100; // greater than A_ACCENT_A
       case "SA_CA_SE": return 100; // greater than D_N
@@ -354,7 +356,12 @@ public class French extends Language implements AutoCloseable {
       case "MOT_TRAIT_MOT": return -400; // lesser than UPPERCASE_SENTENCE_START and FR_SPELLING_RULE
       case "FRENCH_WORD_REPEAT_BEGINNING_RULE": return -350; // less than REPETITIONS_STYLE
     }
-
+    if (id.startsWith("FR_COMPOUNDS")) {
+      return 500;
+    }
+    if (id.startsWith("FR_SIMPLE_REPLACE")) {
+      return 150;
+    }
     if (id.startsWith("grammalecte_")) {
       return -150;
     }
@@ -362,7 +369,6 @@ public class French extends Language implements AutoCloseable {
     if (id.startsWith("AI_FR_HYDRA_LEO")) { // prefer more specific rules (also speller)
       return -101;
     }
-
     return super.getPriorityForId(id);
   }
   
@@ -375,13 +381,16 @@ public class French extends Language implements AutoCloseable {
     if (enabledRules.contains("APOS_TYP")) {
       List<RuleMatch> newRuleMatches = new ArrayList<>();
       for (RuleMatch rm : ruleMatches) {
-        List<String> replacements = rm.getSuggestedReplacements();
-        List<String> newReplacements = new ArrayList<>();
-        for (String s : replacements) {
-          if (s.length() > 1) {
-            s = s.replace("'", "’");
+        List<SuggestedReplacement> replacements = rm.getSuggestedReplacementObjects();
+        List<SuggestedReplacement> newReplacements = new ArrayList<>();
+        for (SuggestedReplacement s : replacements) {
+          String newReplStr = s.getReplacement();
+          if (s.getReplacement().length() > 1) {
+            newReplStr = s.getReplacement().replace("'", "’");
           }
-          newReplacements.add(s);
+          SuggestedReplacement newRepl = new SuggestedReplacement(s);
+          newRepl.setReplacement(newReplStr);
+          newReplacements.add(newRepl);
         }
         RuleMatch newMatch = new RuleMatch(rm, newReplacements);
         newRuleMatches.add(newMatch);

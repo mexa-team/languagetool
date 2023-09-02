@@ -881,3 +881,12 @@ why	why	RB
 rebuilded	rebuild	VBN
 rebuilded	rebuild	VBD
 la	la	DT
+henry	henry	RB
+content	content	UH
+neuter	neuter	VBG
+reprobate	reprobate	VBG
+sallow	sallow	VBG
+underlays	underlay	VBG
+installed	instal	VBD
+installed	instal	VBN
+installing	instal	VBG

@@ -439,6 +439,26 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
         <example>навчитися самій робити хліб</example>
         <example>тут навчалася півтора року.</example>
       </rule>
+      
+      <rule>
+        <pattern>
+          <token inflected="yes">навчання</token>
+          <marker>
+            <token postag_regexp="yes" postag="adj:.:v_dav.*" min="0"/>
+            <token postag_regexp="yes" postag="noun:inanim:.:v_dav.*">
+              <exception postag_regexp="yes" postag="noun:inanim:.:v_(oru|rod).*|adv.*"/>
+            </token>
+          </marker>
+        </pattern>
+        <message>Навчати чого</message>
+        <example correction="">навчання <marker>математиці</marker>.</example>
+        <example correction="">навчання <marker>іноземним мовам</marker>.</example>
+        <!--
+        <example correction="">навчинню їх <marker>здоровому способу</marker> життя.</example>
+        -->
+        <example>навчання персоналу</example>
+      </rule>
+
     </rulegroup>
 
     <rulegroup id="CONSISTENCY_NOUN_NUMERIC_FRACTIONAL" name="Узгодженість числа іменників з дробовими числівниками">
@@ -2357,6 +2377,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
         <example correction="ущент|дощенту|упень">і <marker>на голову</marker> розбитого.</example>
       </rule>
     </rulegroup>
+
+    <rule id="sprytni_napoi" name="Спритні напої">
+      <pattern>
+        <token inflected="yes">спритний</token>
+        <token inflected="yes">напій</token>
+      </pattern>
+      <message>Можливо ви мали на увазі: <suggestion><match no="1" regexp_match="(?iu)спритн(.*)" regexp_replace="спиртн$1"/> \2</suggestion></message>
+      <example correction="спиртними напоями"><marker>спритними напоями</marker></example>
+    </rule>
+
+    <rule id="pokrashennya" name="Покрашення і покращення">
+      <pattern>
+        <token inflected="yes">покрашення</token>
+      </pattern>
+      <message>Можливо ви мали на увазі: <suggestion><match no="1" regexp_match="(?iu)покраш(.*)" regexp_replace="покращ$1"/></suggestion></message>
+      <example correction="покращенню"><marker>покрашенню</marker> вже сьогодні</example>
+    </rule>
 
   </category>
 

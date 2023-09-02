@@ -163,6 +163,9 @@ public class UkrainianWordTokenizerTest {
     testList = w.tokenize("-20");
     assertEquals(Arrays.asList("-", "20"), testList);
 
+    testList = w.tokenize("–20");
+    assertEquals(Arrays.asList("\u2013", "20"), testList);
+
     testList = w.tokenize("прислівник+займенник");
     assertEquals(Arrays.asList("прислівник", "+", "займенник"), testList);
 
@@ -519,10 +522,15 @@ public class UkrainianWordTokenizerTest {
     testList = w.tokenize("- Вибори-2019");
     assertEquals(Arrays.asList("-", " ", "Вибори-2019"), testList);
     
+    testList = w.tokenize("порівн. з англ");
+    assertEquals(Arrays.asList("порівн.", " ", "з", " ", "англ"), testList);
 
     // not too frequent
 //    testList = w.tokenize("30.04.10р.");
 //    assertEquals(Arrays.asList("30.04.10", "р."), testList);
+    
+    testList = w.tokenize("поч. 1945 - кін. 1946");
+    assertEquals(Arrays.asList("поч.", " ", "1945", " ", "-", " ", "кін.", " ", "1946"), testList);
   }
 
   @Test
@@ -640,6 +648,8 @@ public class UkrainianWordTokenizerTest {
     testList = w.tokenize("5′"); // U+2032
     assertEquals(Arrays.asList("5", "′"), testList);
     
+    testList = w.tokenize("'⚪'"); // U+26AA + U+FE0F
+    assertEquals(Arrays.asList("'", "⚪", "'"), testList);
   }
   
   @Test

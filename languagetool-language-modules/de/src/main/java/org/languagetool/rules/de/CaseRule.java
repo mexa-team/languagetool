@@ -147,6 +147,7 @@ public class CaseRule extends Rule {
     "Fair", // eng
     "Viral", // eng
     "Tough", // eng
+    "Indoor", // eng
     "Superb", // eng und Automodell
     "Resilient", // eng
     "Hexagonal", // eng
@@ -618,9 +619,14 @@ public class CaseRule extends Rule {
     "Nähten",
     "Narkoseverfahren",
     "Neuem",
+    "Neugeborene",
+    "Neugeborenen",
+    "Neugeborenes",
     "Nr",
     "Nutze",   // zu Nutze
+    "Obdachlose",
     "Obdachloser",
+    "Obdachlosen",
     "Oder",   // der Fluss
     "Ohrfeige",
     "Patsche",
@@ -632,6 +638,8 @@ public class CaseRule extends Rule {
     "Sachverständiger",
     "Sankt",
     "Schaulustige",
+    "Schaulustigen",
+    "Schaulustiger",
     "Scheine",
     "Scheiße",
     "Schuft",
@@ -711,6 +719,7 @@ public class CaseRule extends Rule {
     "Euch",
     "Euer",
     "Eure",
+    "Euern",
     "Eurem",
     "Euren",
     "Eures",

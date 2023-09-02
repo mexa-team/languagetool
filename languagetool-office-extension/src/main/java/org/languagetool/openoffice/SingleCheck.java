@@ -88,8 +88,9 @@ class SingleCheck {
   private final Language docLanguage;               //  docLanguage (usually the Language of the first paragraph)
   private final Language fixedLanguage;             //  fixed language (by configuration); if null: use language of document (given by LO/OO)
   private final IgnoredMatches ignoredMatches;      //  Map of matches (number of paragraph, number of character) that should be ignored after ignoreOnce was called
-  private DocumentCursorTools docCursor;            //  Save document cursor for the single document
-  private FlatParagraphTools flatPara;              //  Save information for flat paragraphs (including iterator and iterator provider) for the single document
+  private final IgnoredMatches permanentIgnoredMatches; //  Map of matches (number of paragraph, number of character) that should be ignored permanent
+//  private DocumentCursorTools docCursor;            //  Save document cursor for the single document
+//  private FlatParagraphTools flatPara;              //  Save information for flat paragraphs (including iterator and iterator provider) for the single document
 
   private int changeFrom = 0;                       //  Change result cache from paragraph
   private int changeTo = 0;                         //  Change result cache to paragraph
@@ -97,14 +98,15 @@ class SingleCheck {
 
   private List<Integer> changedParas;               //  List of changed paragraphs after editing the document
   
-  SingleCheck(SingleDocument singleDocument, List<ResultCache> paragraphsCache, DocumentCursorTools docCursor,
-      FlatParagraphTools flatPara, Language fixedLanguage, Language docLanguage, IgnoredMatches ignoredMatches, 
+  SingleCheck(SingleDocument singleDocument, List<ResultCache> paragraphsCache,
+      Language fixedLanguage, Language docLanguage, 
+      IgnoredMatches ignoredMatches, IgnoredMatches permanentIgnoredMatches, 
       int numParasToCheck, boolean isDialogRequest, boolean isMouseRequest, boolean isIntern) {
     debugMode = OfficeTools.DEBUG_MODE_SC;
     this.singleDocument = singleDocument;
     this.paragraphsCache = paragraphsCache;
-    this.docCursor = docCursor;
-    this.flatPara = flatPara;
+//    this.docCursor = docCursor;
+//    this.flatPara = flatPara;
     this.numParasToCheck = numParasToCheck;
     this.isDialogRequest = isDialogRequest;
     this.isMouseRequest = isMouseRequest;
@@ -112,6 +114,7 @@ class SingleCheck {
     this.docLanguage = docLanguage;
     this.fixedLanguage = fixedLanguage;
     this.ignoredMatches = ignoredMatches;
+    this.permanentIgnoredMatches = permanentIgnoredMatches;
     mDocHandler = singleDocument.getMultiDocumentsHandler();
     xComponent = singleDocument.getXComponent();
     docCache = singleDocument.getDocumentCache();
@@ -132,9 +135,9 @@ class SingleCheck {
       return new SingleProofreadingError[0];
     }
     if (docType == DocumentType.WRITER && !isIntern && lastChangedPara >= 0) {
-      if (docCursor == null) {
-        docCursor = new DocumentCursorTools(xComponent);
-      }
+//      if (docCursor == null) {
+//        docCursor = new DocumentCursorTools(xComponent);
+//      }
       List<Integer> changedParas = singleDocument.getLastChangedParas();
       if (changedParas == null) {
         changedParas = new ArrayList<Integer>();
@@ -143,7 +146,7 @@ class SingleCheck {
       }
       if (changedParas.contains(lastChangedPara) )
       changedParas.add(lastChangedPara);
-      remarkChangedParagraphs(changedParas, docCursor, flatPara, lt, true);
+      remarkChangedParagraphs(changedParas, changedParas, lt, true);
     }
     this.lastSinglePara = lastSinglePara;
     if (numParasToCheck != 0 && paraNum >= 0) {
@@ -159,15 +162,15 @@ class SingleCheck {
           + "; docID: " + singleDocument.getDocID());
     }
     if (!isDisposed() && docType == DocumentType.WRITER && numParasToCheck != 0 && paraNum >= 0 && (textIsChanged || isDialogRequest)) {
-      if (docCursor == null && !isDisposed()) {
-        docCursor = new DocumentCursorTools(xComponent);
-      }
+//      if (docCursor == null && !isDisposed()) {
+//        docCursor = new DocumentCursorTools(xComponent);
+//      }
       if (!isIntern && isDialogRequest && !textIsChanged) {
         List<Integer> changedParas = new ArrayList<Integer>();
         changedParas.add(paraNum);
-        remarkChangedParagraphs(changedParas, docCursor, flatPara, lt, true);
+        remarkChangedParagraphs(changedParas, changedParas, lt, true);
       } else if (textIsChanged && (!useQueue || isDialogRequest)) {
-        remarkChangedParagraphs(changedParas, docCursor, flatPara, lt, true);
+        remarkChangedParagraphs(changedParas, changedParas, lt, true);
       }
     }
     return errors;
@@ -181,7 +184,6 @@ class SingleCheck {
         boolean checkOnlyParagraph, boolean override, boolean isIntern, boolean hasFootnotes) {
     //  make the method thread save
     MultiDocumentsHandler mDH = mDocHandler;
-    DocumentCursorTools docCursor = this.docCursor;
     if (isDisposed() || docCache == null || nFPara < 0 || nFPara >= docCache.size()) {
       MessageHandler.printToLogFile("SingleCheck: addParaErrorsToCache: return: isDisposed = " + isDisposed() + ", nFPara = " + nFPara 
           + ", docCache(Size) = " + (docCache == null ? "null" : docCache.size()) );
@@ -201,9 +203,6 @@ class SingleCheck {
       TextParagraph tPara = docCache.getNumberOfTextParagraph(nFPara);
       if (tPara.type < 0 || tPara.number < 0) {
         MessageHandler.printToLogFile("WARNING: doc cache corrupted (at SingleCheck: addParaErrorsToCache) : refresh doc cache!");
-        if (docCursor == null) {
-          docCursor = new DocumentCursorTools(xComponent);
-        }
         this.docCache.refresh(singleDocument, LinguisticServices.getLocale(fixedLanguage), 
             LinguisticServices.getLocale(docLanguage), xComponent, 7);
         docCache = new DocumentCache(this.docCache);
@@ -301,21 +300,22 @@ class SingleCheck {
           oldCache = null;
           return;
         }
-        if (docCursor == null) {
-          docCursor = new DocumentCursorTools(xComponent);
-        }
-        flatPara = singleDocument.setFlatParagraphTools();
+//        flatPara = singleDocument.getFlatParagraphTools();
         
         List<Integer> changedParas = new ArrayList<>();
+        List<Integer> toRemarkParas = new ArrayList<>();
         if (cacheNum == 0) {
           changedParas.add(nFPara);
-          remarkChangedParagraphs(changedParas, docCursor, flatPara, lt, true);
+          remarkChangedParagraphs(changedParas, changedParas, lt, true);
         } else if (oldCache != null) {
           for (int nText = startPara; nText < endPara; nText++) {
             int nFlat = docCache.getFlatParagraphNumber(docCache.createTextParagraph(cursorType, nText));
             if (paragraphsCache.get(0).getCacheEntry(nFlat) != null) {
               if (ResultCache.areDifferentEntries(paragraphsCache.get(cacheNum).getSerialCacheEntry(nFlat), oldCache.getSerialCacheEntry(nFlat))) {
                 changedParas.add(nFlat);
+                if(!ResultCache.isEmptyEntry(oldCache.getSerialCacheEntry(nFlat))) {
+                  toRemarkParas.add(nFlat);
+                }
               }
             }
           }
@@ -331,7 +331,7 @@ class SingleCheck {
               MessageHandler.printToLogFile(tmpText);
             }
             singleDocument.setLastChangedParas(changedParas);
-            remarkChangedParagraphs(changedParas, docCursor, flatPara, lt, true);
+            remarkChangedParagraphs(changedParas, toRemarkParas, lt, true);
           } else if (debugMode > 1) {
             MessageHandler.printToLogFile("SingleCheck: addParaErrorsToCache: Cache(" + cacheNum + ") Mark paragraphs from " + startPara 
                 + " to " + endPara + ": No Paras to Mark, tPara.type: " + tPara.type + ", tPara.number: " + tPara.number + ", nFPara: " + nFPara);
@@ -348,15 +348,14 @@ class SingleCheck {
    * remark changed paragraphs
    * override existing marks
    */
-  public void remarkChangedParagraphs(List<Integer> changedParas, DocumentCursorTools docCursor, 
-      FlatParagraphTools flatPara, SwJLanguageTool lt, boolean override) {
+  public void remarkChangedParagraphs(List<Integer> changedParas, List<Integer> toRemarkParas, SwJLanguageTool lt, boolean override) {
     if (!isDisposed() && !mDocHandler.isBackgroundCheckOff() && (!isDialogRequest || isIntern)) {
+      
       Map <Integer, List<SentenceErrors>> changedParasMap = new HashMap<>();
-      List <TextParagraph> changedTextParas = new ArrayList<>();
+      List <TextParagraph> toRemarkTextParas = new ArrayList<>();
       for (int i = 0; i < changedParas.size(); i++) {
         List<SentenceErrors> sentencesErrors = getSentencesErrosAsList(changedParas.get(i), lt);
         changedParasMap.put(changedParas.get(i), sentencesErrors);
-        changedTextParas.add(docCache.getNumberOfTextParagraph(changedParas.get(i)));
         if (debugMode > 1) {
           String message = "SingleCheck: remarkChangedParagraphs: Mark errors: Paragraph: " + changedParas.get(i) 
           + "; Number of sentences: " + sentencesErrors.size();
@@ -379,8 +378,25 @@ class SingleCheck {
           }
         }
       }
-      docCursor.removeMarks(changedTextParas);
-      flatPara.markParagraphs(changedParasMap);
+      for (int i = 0; i < toRemarkParas.size(); i++) {
+        toRemarkTextParas.add(docCache.getNumberOfTextParagraph(toRemarkParas.get(i)));
+        if (debugMode > 1) {
+          String message = "SingleCheck: remarkChangedParagraphs: Remark: Paragraph: " + toRemarkParas.get(i);
+          MessageHandler.printToLogFile(message);
+        }
+      }
+      if (!isDisposed() && !toRemarkTextParas.isEmpty()) {
+        DocumentCursorTools docCursor = singleDocument.getDocumentCursorTools();
+        if (docCursor != null) {
+          docCursor.removeMarks(toRemarkTextParas);
+        }
+      }
+      if (!isDisposed()) {
+        FlatParagraphTools flatPara = singleDocument.getFlatParagraphTools();
+        if (flatPara != null) {
+          flatPara.markParagraphs(changedParasMap);
+        }
+      }
     }
   }
   
@@ -429,10 +445,12 @@ class SingleCheck {
    * Filter ignored errors (from ignore once)
    */
   private SingleProofreadingError[] filterIgnoredMatches (SingleProofreadingError[] unFilteredErrors, int nPara) {
-    if (!ignoredMatches.isEmpty() && ignoredMatches.containsParagraph(nPara)) {
+    if ((!ignoredMatches.isEmpty() && ignoredMatches.containsParagraph(nPara)) || 
+        (!permanentIgnoredMatches.isEmpty() && permanentIgnoredMatches.containsParagraph(nPara))){
       List<SingleProofreadingError> filteredErrors = new ArrayList<>();
       for (SingleProofreadingError error : unFilteredErrors) {
-        if (!ignoredMatches.isIgnored(error.nErrorStart, error.nErrorStart + error.nErrorLength, nPara, error.aRuleIdentifier)) {
+        if (!ignoredMatches.isIgnored(error.nErrorStart, error.nErrorStart + error.nErrorLength, nPara, error.aRuleIdentifier) &&
+            !permanentIgnoredMatches.isIgnored(error.nErrorStart, error.nErrorStart + error.nErrorLength, nPara, error.aRuleIdentifier)) {
           filteredErrors.add(error);
         }
       }
@@ -457,7 +475,7 @@ class SingleCheck {
       return pErrors;
     }
     TextParagraph nTParas = paraNum < 0 ? null : docCache.getNumberOfTextParagraph(paraNum);
-    if (nTParas == null || nTParas.type == DocumentCache.CURSOR_TYPE_UNKNOWN) {
+    if (nTParas == null || nTParas.type == DocumentCache.CURSOR_TYPE_UNKNOWN || docCache.isSingleParagraph(paraNum)) {
       pErrors.add(checkParaRules(paraText, locale, footnotePos, paraNum, startSentencePos, lt, 0, 0, textIsChanged, isIntern));
     } else {
       //  Real full text check / numParas < 0
@@ -566,10 +584,11 @@ class SingleCheck {
         lastSinglePara = paraText;
       }
       // return Cache result if available / for right mouse click or Dialog only use cache
-      boolean isTextParagraph = nFPara >= 0 && docCache != null && docCache.getNumberOfTextParagraph(nFPara).type != DocumentCache.CURSOR_TYPE_UNKNOWN;
+      boolean isTextParagraph = nFPara >= 0 && docCache != null && docCache.getNumberOfTextParagraph(nFPara).type != DocumentCache.CURSOR_TYPE_UNKNOWN
+          && !docCache.isSingleParagraph(nFPara);
       if (nFPara >= 0 && (pErrors != null || isMouseRequest || (useQueue && !isDialogRequest && parasToCheck != 0))) {
         if (useQueue && pErrors == null && parasToCheck != 0 && isTextParagraph) {
-          singleDocument.addQueueEntry(nFPara, cacheNum, parasToCheck, singleDocument.getDocID(), textIsChanged, textIsChanged);
+          singleDocument.addQueueEntry(nFPara, cacheNum, parasToCheck, singleDocument.getDocID(), textIsChanged);
         }
         return pErrors;
       }

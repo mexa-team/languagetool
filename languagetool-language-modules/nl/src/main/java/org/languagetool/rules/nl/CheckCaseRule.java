@@ -26,15 +26,14 @@ import java.util.ResourceBundle;
 import org.languagetool.Language;
 import org.languagetool.rules.AbstractCheckCaseRule;
 
-public class CheckCaseRule  extends AbstractCheckCaseRule {
+public class CheckCaseRule extends AbstractCheckCaseRule {
 
-  
   private static final String FILE_NAME = "/nl/check_case.txt";
   private static final Locale NL_LOCALE = new Locale("nl");
   
   public CheckCaseRule(ResourceBundle messages, Language language) {
     super(messages, language);
-    //this.setDefaultTempOff();
+    useSubRuleSpecificIds();
   }
 
   @Override
@@ -49,7 +48,7 @@ public class CheckCaseRule  extends AbstractCheckCaseRule {
 
   @Override
   public String getDescription() {
-    return "Controle op hoofd- en kleine letters";
+    return "Controle op hoofd- en kleine letters: $match";
   }
 
   @Override
@@ -59,7 +58,7 @@ public class CheckCaseRule  extends AbstractCheckCaseRule {
 
   @Override
   public String getMessage() {
-    return "Aanbevolen schrijfwijze";
+    return "Juiste schrijfwijze";
   }
   
   @Override

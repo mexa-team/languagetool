@@ -1449,8 +1449,8 @@ Messerschmidt/S #name
 Ibu/S #name
 Adani/S #name
 Borowiecki/S #name
-Slamp/S #name #brand
-SLAMP #name #brand
+Slamp/S #name #name
+SLAMP #name #name
 Thibaudet/S #name
 Thibaut/S #name
 Thibeault/S #name
@@ -1461,3 +1461,757 @@ Bellinis #name
 Bellicio #name
 Obazda
 E-Mail-Ping-Pong
+Chiappe/S #name
+Chippy/S
+Chirbet/S
+Chirp/S
+CHIRP
+Chubb/S
+Khirbet/S #name
+Shippō-Design/S
+Shippō design/S
+Shippo design/S
+whipped cream
+𝑎ₙ
+Whipper/S #eng
+Galeão/S #name
+Galvão/S #name
+Gyalpo/S #name
+Mistretta/S #name
+Piwipp/S #name
+𝑥-Achse/N
+𝑦-Achse/N
+𝑥-Richtung
+𝑦-Richtung
+Galão
+Shipping #eng
+ASchG #abk
+AM-VO #abk
+IDG-Expertennetzwerk/S
+Treatment/S #eng
+On-Premise-Version/S #eng
+Self-Hosting/S #eng
+Lelm #name
+Melm #name
+Danielzik #name
+Anliker #name
+Gebrauchspur
+Gebrauchspuren
+Départment/S #fr
+Appartamento/S #it
+Pricing/S #eng
+NG #abk
+PV #abk
+UP #abk
+BY #abk
+Achievement/S #eng
+ASL #abk
+Matchmaking/S #eng
+NF #abk
+NV #abk
+ACM #abk
+CPO #abk
+Herrmann-Wick/S #name
+Upamecano/S #name
+Anastacia/S #name
+Anastasius #name
+Anastasova #name
+Echte Rose von Jericho #name
+Anastatica/S
+hierochuntica
+hierochuntia
+Brassicaceae
+Jean-Bédel Bokassa/S #name
+Bonacci/S #name
+Bonanni/S #name
+Bonavia/S #name
+Bonaya/S #name
+Boyancé/S #name
+Kilauea/S #name
+Kīlauea/S #name
+Piton de la Fournaise #name
+Rashidi #name
+Monasca/S #name
+Herzes
+Imbalance/NS
+Kavafis #name
+Konstantínos Pétrou Kaváfis #name
+Navalis #name
+Savarin
+Saverio/S #name
+Sawiris #name
+vl. #abk
+vll. #abk
+Klink/S #name
+Klopp/S #name
+AIS #abk
+code
+coden
+codet
+codete
+codeten
+codest
+RPC/S
+Application/S #eng
+Singh/S #name
+Quality #eng
+Branch #eng
+Friends #name #eng
+Caption/S #eng
+Coco/S #eng
+AAA #abk
+Jarasch/S #name
+Chicken/S #eng
+Five #eng
+Bilal/S #name
+Orga/S #abk
+Holzer/S #name
+VO #abk
+Christophe/S #name
+Oksana/S #name
+ZS #abk
+Marten/S #name
+VE #abk
+UB #abk
+AX #abk
+Billing/S #eng
+NG #abk
+Sprockhoff/S #name
+iDrive #name
+Ashoka/S #name
+Enhanced #eng
+enhanced #eng
+Toshio #name
+Dobbins #name
+Tappius #name
+Toppits #name
+Unmack/S #name
+Delonges #name
+lungo
+com gelo
+benutz #ugs
+besorg #ugs
+signifikativ/A
+scrapen #eng
+Brahimi/S #name
+Ebrah/S #name
+Heaven/S #eng
+Ibrahima/S #name
+Ibrahimi/S #name
+Welfens #name
+nutz #ugs
+FDIC #name
+SVB #name
+Tracleer #name
+Actelion/S #name
+Alclad #name
+ALCLAD #name
+Anshu/S #name
+Appenhofen/S #name
+Art/S #eng
+Asmussen/S #name
+Aspetsberger/S #name
+Aznavour/S #name
+Barley/S #name
+Blanes #name
+Bosl/S #name
+Britscho/S #name
+Burren/S #name
+Centerstage/S #eng
+Cervenak/S #name
+Chandran/S #name
+Chemrey/S #name
+Rutaceae
+Claassen/S #name
+Click & Clever #name
+Click&Clever #name
+Dachsbach/S #name
+Deglmann/S #name
+Depenbrock/S #name
+Ditfurth/S #name
+Drischel/S #name
+dt. #abk
+Strenesse/S #name
+SAF #abk
+KGs #abk
+hieronisch/A
+Tagesmax.
+Tagesmin.
+mittl. #abk
+UNCh #abk
+IGH/S #abk
+GNTM #abk
+RSU
+RSUs
+lit. #abk
+TTDSG #abk
+flitz #ugs
+dbglz. #abk
+QuillBot/S #name
+Scribbr/S #name
+Learneo/S #name
+Brazzo/S #name
+Apr. #abk
+Evelin/S #name
+BWU #abk
+FZAG #abk
+Lanz #name
+TA #abk
+XM #abk
+xDrive
+DSC #abk
+VESA #abk
+OR #abk
+Abdel/S #name
+GEG #abk
+auswendiggespielt/A
+auswendigzitiert/A
+auswendiggekonnt/A
+auswendiggekannt/A
+auswendiggewusst/A
+Lachssoße/N
+Biotronik/S #name
+engsitzend/A
+engvertraut/A
+bigFM #name
+manager magazin/S #name
+Erlöschen/S
+InsO #abk
+Ankunftebene/N
+Practitioner/S #eng
+Visegráder Gebirge/S #name
+Plintenburger Gebirge/S #name
+obgenannt/A
+Lüdke/S #name
+Seven #eng
+Boy Scout/S #eng
+Rainbow/S #eng
+GHS #abk
+vernetz #ugs
+ggb. #abk
+Liquid Crystal Display #eng
+Short Message Service #eng
+International Standard Book Number #eng
+Portable Document Format #eng
+Solid State Drive #eng
+Headless #eng
+Emmanuelle/S #name
+Filzbeck/S #name
+Frühbeck/S #name
+Sekretarius
+sekret/A
+Sekretar/S
+Sekretare/N
+Daraufzeigen/S
+Beschenktwerden/S
+Fischbeck/S
+Goldblum/S #name
+BfJ #abk #name
+eID #abk
+DRS #abk
+Rezzo/S #name
+Bluesky/S #name
+Saitenwürstle
+IONOS #name
+Alptraumszenario/S
+Alptraumszenarien
+MAANG #name #abk
+So-yeon/S #name
+Morales #name
+UCITS #abk
+SPDR #abk
+Baker/S #name
+Graichen/S #name
+AE #abk
+heul
+beurteil
+Arzach/S #name
+pot. #abk
+Neufahrn/S #name
+TFSI #abk
+MMI #abk
+TDI #abk
+EBT #abk
+SBT #abk
+Veolia #name
+Vivendi #name
+TSH #abk
+SCT #abk
+ODD #abk
+DBT #abk
+contenteditable #name
+contentEditable #name
+ContentEditable #name
+Assault #eng
+Ventriculus
+Afterwork #eng
+Marcus Minucius #name
+tlg. #abk
+ggfls. #abk
+er- #1960er-
+Greenaway #name
+Bank Wegelin #name
+Bank Frey #name
+Thomalla/S #name
+ignorier #ugs
+IHKs #abk
+Ottobock/S #name
+Yeliz #name
+WWDCs
+IBANs
+BICs
+Bridget/S #name
+WMA #abk
+Vorbis #name
+fünfteln
+fünftelt
+fünftelte
+gefünftelt/P
+fünftelst
+erörter
+LE #abk
+NH #abk
+ANR #abk
+ECC #abk
+Eriksson/S #name
+Svensson/S #name
+Ewersbach/S #name
+IBL #abk
+PZ #abk
+VCI #abk
+TSI #abk
+STIHL #name
+Renewal/S
+ABZ #abk
+ASMR #abk
+ASML #abk
+ASN #abk
+AWL #abk
+AVW #abk
+Merklingen/S #name
+Novigrad/S #name
+Nascimento/S #name
+Krišjānis #name
+Kariņš #name
+Suárez #name
+Primera #span
+División #span
+Chase/S #name
+Luiz Inácio Lula/S #name
+Luiz #name
+Inácio/S #name
+MLB #name #abk
+Gütigkeit
+Cinecity #name
+DFB-Team/S
+Hidromek/S #name
+San-Pédro/S #name
+Villarrica/S #name
+Tacoma/S #name
+Lindsey/S #name
+Giroud/S #name
+Lauper/S #name
+EinSiG #abk
+Scam/S #eng
+All Hands #eng
+All-Hands #eng
+Regentenbau/S #name
+Schöller/S #name
+Beteiligungs-AG
+Offenau/S #name
+Oldisleben/S #name
+Oberhofen/S #name
+Nikhil/S #name
+Enagas #name
+SDCS #abk
+DTA #abk
+LCF #abk
+Black #eng
+Ellershausen/S #name
+Westerhoff/S #name
+STOXX #abk
+generier
+Preno­ti­fi­ca­tion/S
+Pre-No­ti­fi­ca­tion/S
+benähmt
+benähmst
+einnähmt
+Oleksij/S #name
+Wellhausen/S #name
+vermalen
+vermale
+vermalst
+vermalt/P
+vermalte
+vermalten
+Zierenberg/S #name
+Untersteinach/S #name
+K.St. #abk
+bezähmen
+bezähme
+bezähmte
+bezähmten
+bezähmst
+bezähmt/P
+öff.-recht. #abk
+jüd.-deutsch/A #abk
+jüd.-dt. #abk
+Math.-Nat.-Fakultät	#abk
+bücher.de #name
+Univ.-Doz. #abk
+Heft-Nr. #abk
+Inv.-Nr. #abk
+Univ.-Ass. #abk
+Verl.-Ges. #abk
+FNs #abk
+grad #ugs
+gerad #ugs
+weißeln
+weißel
+weißelst
+weißelte
+weißelten
+geweißelt/P
+Weißheit
+wisset
+Cummings #name
+Kornblum/S #name
+sexgeil/A
+jgdfr. #abk
+Galveston/S #name
+eff. #abk
+as-Sabah/S #name
+as-Said/S #name
+as-Salim/S #name
+MarkenG #name #abk
+MaMoG #abk
+Ultrashort #eng
+iBoxx #name
+WeltSparen #name
+du Pont #name
+Suarez #name
+Sèvres #name
+Ch.-B. #abk
+Sèvres #name
+Suárez #name
+Teerhof #name
+Teerhofes #name
+TuneUp #name
+baby-walz #name
+hamito-semitisch/A
+semito-hamitisch/A
+suprême #fr
+turkomanisch/A
+Waterfront #name
+Single-Sign-On-Produkt/S
+Single-Sign-On-Produkte/N
+Single-Sign-On-Product/S #eng
+Chodorkowski/S #name
+Politico/S #name
+DJV #abk
+Klamroth/S #name
+Allover #eng #komp
+Angelone/S #name
+Angelou/S #name
+Jürgen Angelow/S #name
+Cartier-Bresson/S #name
+STEP #eng
+Step-by-Step #eng
+Two-Step #eng
+Two Step #eng
+Weilerbach/S #name
+abgeschleift/P
+allowed #eng
+not allowed #eng
+an_verloben
+StEP #abk
+Logpay/S #name
+LogPay/S #name
+LOGPAY/S #name
+OceanGate/S #name
+Princess #eng
+fuck #eng
+Fuck #eng
+STEOP #abk
+SEECP #abk
+SREBP #abk
+StEOP #abk
+Step/S #eng
+ScotRail #name
+Step Up #name
+kartenhistorisch/A
+raus_sammeln #ugs
+Ultra-Trail World Tour #name
+OGAW #abk
+CFSB #abk
+UDG #abk
+TER #abk
+Total Expense Ratio/S #eng
+gebührenbewusst/A
+VFINX #abk
+SPY #abk
+Amundi/S #name
+iShares #name
+Loglan #name
+SAACKE #name
+Senkrechtbalken/S
+Snake #name
+SnapCam #name
+Snatch #name
+INDOOR
+OUTDOOR
+into #eng
+SoSe #abk
+WiSe #abk
+Orkney Inseln
+Gude #ugs
+Tagchen #ugs
+Tach auch #ugs
+Sers #ugs
+sehest #sehen
+sehet #sehen
+säest #säen
+säet #säen
+sä #säen
+die Hallos #plural
+Konik/S
+unterperformend/A
+OpenNIC #name
+OpenNet #name
+OpenNap #name
+OpenVMS #name
+rum_sülzen #ugs
+Breiding #name
+Maloney/S #name
+NetPositive #name
+Salonen #name
+Description #eng
+Application #eng
+Communications #eng
+Technologies #eng
+California #eng
+Construction #eng
+Acquisition #eng
+Manufacturing #eng
+Architecture #eng
+Relationship #eng
+Marketplace #eng
+Excellence #eng
+Authentication #eng
+Communication #eng
+Stevanovic #name
+Sterniotis #name
+Vasanthakumar #name
+Competition #eng
+Opportunity #eng
+Collaboration #eng
+Redemption #eng
+Configuration #eng
+Care-Arbeit #eng
+Impressions #eng
+Neodigital #name
+Christophe #name
+Unterbuchner #name
+Baccalaureate #eng
+Eichenberger #name
+Subscription #eng
+Bündnerland #name
+Continuity #eng
+Cancellation #eng
+Programming #eng
+Identifier #eng
+Availability #eng
+Bersenbrück #name
+Confirmation #eng
+Technology #eng
+Bretschneider #name
+End-to-End #eng
+Anniversary #eng
+Hospitality #eng
+Brandenberger #name
+Allmendinger #name
+Contemporary #eng
+Certificate #eng
+Call-to-Action/S #eng
+Privacy #eng
+UBAS #Unabhängiger Bundesasylsenat
+OpenDNS #name
+OpenDOS #name
+OpenGIS #name
+Böhlau/S #name
+Eisoldt/S #name
+Jochmann/S #name
+Jöcher/S #name
+Christophstaler/SN #name
+Entity #eng
+gettex #name
+LLM/S #abk
+Ramaphosa/S #name
+Avodart/S #name
+Nascar Trading Card/S #name
+Purpose #eng
+Jewgeni/S #name
+Alfaview/S #name
+alfaview/S #name
+Freeport/S #name
+Shubham/S #name
+Groß-Naedlitz #name
+Kaselitz #name
+Liepnitz #name
+Reuß-Köstritz #name
+Roselius #name
+CEST #abk
+Bewersdorff/S #name
+Breinersdorfer/S #name
+Florath/S #name
+Liberatore/S #name
+Music & Literature #name
+Canadian Literature #name
+Criticism and Literature #eng
+African Literature #eng
+Literature and Art #eng
+Latin Literature #eng
+Literature and #eng
+and Literature #eng
+Literature Prize #eng
+Irish Literature #eng
+Comparative Literature #eng
+Fantasy Literature #eng
+Villandry #name
+DSB #abk
+ePrivacy #name
+Socorro/S #name
+Sobotka/S #name
+Shkodran/S #name
+IfZ #Institut für Zeitgeschichte
+IZW #abk
+Bewertungsthread/S #eng
+Nischenthread/S #eng
+Terrakotte/N
+Terramycin
+Terra di Siena #name
+Sienaerde
+Sienaerde
+Terra sigillata
+Terra rossa
+Ausrufzeichen/S
+netto cassa
+btto. #abk
+Accumulatoren Fabrik AG #name
+AFA #abk
+NetBIOS #abk
+Retroschleife/N
+Učka #name
+Memorial #eng
+ATAD #abk
+AStG #abk
+EStDV #abk
+optierend/A
+UStDV #abk
+FZulG #abk
+GenKapG #abk
+Wegovy/S #name
+Crusher/NS #eng
+IDEs #abk
+Modes #eng
+Yasaman/S #name
+BMAS #abk
+Nevi'im #name
+Vlaho Orepic/S #name
+Polyplast #name
+Kasos #name
+Karpathos #name
+Mantinada
+Mantinades
+Yeovil #name
+Ørestad #name
+Ørsted #name
+CFS #abk
+Barbenheimer/S #name
+Markteck/S #name
+Counseling #eng US
+Counselling #eng UK
+Schnelsen/S #name
+gesetzl. #abk
+parlam. #abk
+Serienstaffelsupersammelbox
+Serienstaffelsupersammelboxen
+Garziehen/S
+Brugnatellisch/A #Brugnatellisches Knallsilber
+sackstark/A
+unzufällig/A #style rule
+Monogyna #Ordnung Monogyna
+Crataegus monogyna #name
+Sharkoon/S #name
+Sharpton/S #name
+Shampoon/S
+Schampun/S
+Schampon/S
+MMR #abk
+Robo #ugs
+MAHLE #name
+VDL Citea #name
+Banchero/S #name
+Identity-Provider #added to anglicisms.csv
+Shandong/S #name
+Shinzon/S #name
+Vitafy #name
+vitae #lat
+Verwähler/SN
+Coolblue/S #name
+wtgl. #abk
+LichtBlick/S #name
+Money #eng
+Brother/S #eng
+DTU #abk
+Refund/S #eng
+Charging/S #eng
+Skincare #eng
+Payroll #eng
+Booking.com-Account/S
+Booking.com-Konto/S
+Booking.com-Konten
+Consent/S #eng
+Dog/S #eng
+JobRad/S #name
+Emergency #eng
+Coverage #eng
+PNR #abk
+TF #abk
+Employer/S #eng
+Breakfast/S #eng
+Bucket/S #eng
+DZX #abk
+Identity #eng
+Erwachung
+Lichtenau/S #name
+Thomsen/S #name
+GH #abk
+HPI/S #name #abk
+QW #abk
+RSB #abk
+Campaign/S #eng
+Citizenship/S #eng
+Key Objective/S #eng
+Objective Key Result/S #eng
+Antibody #eng
+Antibodies #eng
+Cappy #ugs
+Cappys #ugs
+ECOLAB #name
+Ecolab/S #name
+ECOSYS #name
+EcoSys #name
+Ecosys #name
+FOKUS #Fraunhofer-Institut
+HHI #Fraunhofer-Institut
+IPK #Fraunhofer-Institut
+IZM #Fraunhofer-Institut
+Chiral Technologies #name
+Ikonium/S #name
+ANP/S #abk #name
+DHDL/S #abk
+No-Deal #eng
+Amiga/S #name
+BFH #abk
+Angular/S #name

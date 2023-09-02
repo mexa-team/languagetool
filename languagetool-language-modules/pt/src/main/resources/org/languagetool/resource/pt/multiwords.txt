@@ -50,6 +50,7 @@
 ####################################################
 ###        Nomes próprios e comuns               ###
 ####################################################
+SESMT Brasil	NPFSO00
 à borliú	RG
 Academia Militar	NPFS000
 Academia Militar Portuguesa	NPFS000
@@ -215,6 +216,7 @@ Pontos Por Polegada	NPMP000
 Porto Editora	NPFS000
 Primavera Árabe	NPFS000
 prime time	NCMS000
+Quinta da Regaleira	NPFSG00
 Rede Mais	NPFS000
 Rede Privada Virtual	NPFS000
 Regulamento Geral de Proteção de Dados	NPMS000
@@ -265,6 +267,7 @@ Wall Street English	NPMS000
 WALL·E	NPMSO00
 Windows Live Messenger	NPMS000
 World Trade Center	NPMS000
+Zé Povinho	NPMS000
 ZX Spectrum	NPMS000
 ####################################################
 ###              Locuções                        ###
@@ -12824,3 +12827,14 @@ Xô pra lá	I
 #posto isto  CC
 #sendo assim   CC
 
+## Unsorted, because life is short and we have shit to do
+lava-louças	NCFN000
+Play Store	NCFS000
+media player	NCMS000
+media players	NCMP000
+CX-One	NPCSO00
+camisa-de-vênus	NCFS000
+camisas-de-vênus	NCFP000
+umbigo-de-vênus	NCMP000
+umbigos-de-vênus	NCMP000
+Joana d'Arc	NPFSS00

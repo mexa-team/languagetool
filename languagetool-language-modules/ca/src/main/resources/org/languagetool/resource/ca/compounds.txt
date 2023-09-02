@@ -14,12 +14,32 @@
 
 # All correct words should be properly tagged in the tagger dictionary or in added.txt 
 
+arc-sinus+
+arc-cosinus+
+arc-cotangent+
+arc-secant+
+arc-cosecant+
+#arc-tangent+
+xat-bot+
+xat-bots+
+blau-grana+
+blau-granes+
+auto-tune+
+auto-tunes+
+mezzo-soprano+
+mezzo-sopranos+
+non-stop*
+afro-americà+
+afro-americans+
+afro-americana+
+afro-americanes+
+be-bop+
 centre-europeu+
 centre-europeus+
 centre-europea+
 centre-europees+
 torca-boques+
-porta-tovallos+
+porta-tovallons+
 pro-rús+
 pro-russa+
 pro-russos+
@@ -1345,8 +1365,6 @@ riba-roger*
 riba-rogera*
 riba-rogeres*
 riba-rogers*
-Riba-Roja*
-Riba-roja*
 ric-rac*
 ric-racs*
 ric-ric*

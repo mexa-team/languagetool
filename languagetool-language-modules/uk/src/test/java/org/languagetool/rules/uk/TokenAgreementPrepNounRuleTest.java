@@ -114,7 +114,9 @@ public class TokenAgreementPrepNounRuleTest extends AbstractRuleTest {
     assertEmptyMatch("у святая святих");
 
     assertEmptyMatch("станом на зараз виконавча влада");
-    
+
+    assertEmptyMatch("в тисяча шістсот якомусь році");
+
 //    assertEmptyMatch("Імена від Андрій до Юрій");  // називний між від і до рідко зустрічається але такий виняток ховає багато помилок 
 
 //    assertEmptyMatch("як у Конана Дойла")).length); //TODO
@@ -234,6 +236,9 @@ public class TokenAgreementPrepNounRuleTest extends AbstractRuleTest {
     assertEquals(1, matches.length);
 
     matches = ruleMatch("до Ленінграду");
+    assertEquals(1, matches.length);
+
+    matches = ruleMatch("для логотипу");
     assertEquals(1, matches.length);
 
 //    matches = ruleMatch("На фото: З Голлівуду Яринка Шуст привезла дві золоті медалі");

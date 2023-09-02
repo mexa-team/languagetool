@@ -58,6 +58,9 @@ public abstract class AbstractSimpleReplaceRule2 extends Rule {
   public abstract List<String> getFileNames();
   @Override
   public abstract String getId();
+  /**
+   * @return A string where {@code $match} will be replaced with the matching word.
+   */
   @Override
   public abstract String getDescription();
   public abstract String getShort();
@@ -140,10 +143,15 @@ public abstract class AbstractSimpleReplaceRule2 extends Rule {
       BufferedReader br = new BufferedReader(isr)) 
     {
       String line;
+      int msgCount = 0;
+      int lineCount = 0;
       while ((line = br.readLine()) != null) {
         line = line.trim();
         if (line.isEmpty() || line.charAt(0) == '#') { // ignore comments
           continue;
+        }
+        if (line.contains("  ") && !lang.getShortCode().equals("ar")) {
+          throw new RuntimeException("More than one consecutive space in " + filename + " - use a tab character as a delimiter for the message: " + line);
         }
         if (checkingCase) {
           String[] parts = line.split("=");
@@ -154,11 +162,13 @@ public abstract class AbstractSimpleReplaceRule2 extends Rule {
         }
         String[] parts = line.split("\t");
         String confPair = parts[0];
+        lineCount++;
         String msg;
         if (parts.length == 1) {
           msg = null;
         } else if (parts.length == 2) {
           msg = parts[1];
+          msgCount++;
         } else {
           throw new IOException("Format error in file " + getDataBroker().getFromRulesDirAsUrl(filename)
             + ". Expected at most 1 '=' character and at most 1 tab character. Line: " + line);
@@ -179,6 +189,7 @@ public abstract class AbstractSimpleReplaceRule2 extends Rule {
           list.get(wordCount - 1).put(searchToken, sugg);
         }
       }
+      //System.out.println(msgCount + " of " + lineCount + " have a specific message in " + filename);
     }
     // seal the result (prevent modification from outside this class)
     List<Map<String,SuggestionWithMessage>> result = new ArrayList<>();
@@ -273,16 +284,24 @@ public abstract class AbstractSimpleReplaceRule2 extends Rule {
           int startPos = prevTokensList.get(len - crtWordCount).getStartPos();
           int endPos = prevTokensList.get(len - 1).getEndPos();
           RuleMatch ruleMatch = new RuleMatch(this, sentence, startPos, endPos, msg, getShort());
+          if (subRuleSpecificIds) {
+            String id = StringTools.toId(getId() + "_" + crt, language);
+            String desc = getDescription().replace("$match", crt);
+            SpecificIdRule specificIdRule = new SpecificIdRule(id, desc, isPremium(), getCategory(), getLocQualityIssueType(), getTags());
+            ruleMatch = new RuleMatch(specificIdRule, sentence, startPos, endPos, msg, getShort());
+          }
           if (crtMatch.getMessage() != null && (crtMatch.getMessage().startsWith("http://") || crtMatch.getMessage().startsWith("https://"))) {
             ruleMatch.setUrl(Tools.getUrl(crtMatch.getMessage()));
           }
-          if (subRuleSpecificIds) {
-            ruleMatch.setSpecificRuleId(StringTools.toId(getId() + "_" + crt));
-          }
           if ((getCaseSensitivy() != CaseSensitivy.CS || getCaseSensitivy() == CaseSensitivy.CSExceptAtSentenceStart)
                && StringTools.startsWithUppercase(crt)) {
+            //String covered = sentence.getText().substring(startPos, endPos);
             for (int k = 0; k < replacements.size(); k++) {
-              replacements.set(k, StringTools.uppercaseFirstChar(replacements.get(k)));
+              String repl = StringTools.uppercaseFirstChar(replacements.get(k));
+              replacements.set(k, repl);
+              //if (covered.equals(repl)) {
+              //  System.err.println("suggestion == original text for '" + covered + "' in AbstractSimpleReplaceRule2");
+              //}
             }
           }
           ruleMatch.setSuggestedReplacements(replacements);
@@ -309,6 +328,24 @@ public abstract class AbstractSimpleReplaceRule2 extends Rule {
   }
   
   protected boolean isTokenException(AnalyzedTokenReadings atr) {
+    return false;
+  }
+
+  /**
+   * Create a warning if a key word of the replacement rule is not allowed by the speller rule.
+   */
+  public boolean checkKeyWordsAreKnownToSpeller() {
+    return false;
+  }
+
+  /**
+   * Create a warning if a key word of the replacement rule is allowed by the speller rule.
+   */
+  public boolean checkKeyWordsAreUnknownToSpeller() {
+    return false;
+  }
+
+  public boolean separateKeyWordsBySpeller() {
     return false;
   }
 

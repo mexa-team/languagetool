@@ -78,7 +78,7 @@ public class German extends Language implements AutoCloseable {
 
   @Override
   public Disambiguator createDefaultDisambiguator() {
-    return new GermanRuleDisambiguator();
+    return new GermanRuleDisambiguator(getDefaultLanguageVariant());
   }
 
   @Nullable
@@ -130,7 +130,7 @@ public class German extends Language implements AutoCloseable {
   @Override
   public List<Rule> getRelevantRules(ResourceBundle messages, UserConfig userConfig, Language motherTongue, List<Language> altLanguages) throws IOException {
     return Arrays.asList(
-            new CommaWhitespaceRule(messages,
+            new GermanCommaWhitespaceRule(messages,
                     Example.wrong("Die Partei<marker> ,</marker> die die letzte Wahl gewann."),
                     Example.fixed("Die Partei<marker>,</marker> die die letzte Wahl gewann."),
                     Tools.getUrl("https://languagetool.org/insights/de/beitrag/grammatik-leerzeichen/#fehler-1-leerzeichen-vor-und-nach-satzzeichen")),
@@ -184,7 +184,10 @@ public class German extends Language implements AutoCloseable {
             new CompoundInfinitivRule(messages, this, userConfig),
             new StyleRepeatedVeryShortSentences(messages, this),
             new StyleRepeatedSentenceBeginning(messages),
-            new GermanRepeatedWordsRule(messages)
+            new GermanRepeatedWordsRule(messages),
+            new StyleTooOftenUsedVerbRule(messages, this, userConfig),
+            new StyleTooOftenUsedNounRule(messages, this, userConfig),
+            new StyleTooOftenUsedAdjectiveRule(messages, this, userConfig)
     );
   }
 
@@ -215,7 +218,7 @@ public class German extends Language implements AutoCloseable {
     return Arrays.asList(
       new UpperCaseNgramRule(messages, languageModel, this),
       new GermanConfusionProbabilityRule(messages, languageModel, this),
-      new ProhibitedCompoundRule(messages, languageModel, userConfig)
+      new ProhibitedCompoundRule(messages, languageModel, userConfig, this)
     );
   }
 
@@ -304,6 +307,7 @@ public class German extends Language implements AutoCloseable {
       case "VERWANDET_VERWANDTE": return 1; // prefer over DE_CASE
       case "IN_DEUTSCHE_SPRACHE": return 1; // prefer over most other rules
       case "SCHMIERE_STEHEN": return 1; // prefer over most other rules
+      case "UEBER_EIN_MANGEL": return 1; // prefer over PRAEP_AKK
       case "SEIT_LAENGEREN": return 1; // prefer over DE_CASE
       case "WIR_GEFUEHL": return 1; // prefer over DE_CASE
       case "VORHER_NACHHER_BILD": return 1; // prefer over DE_CASE
@@ -320,6 +324,7 @@ public class German extends Language implements AutoCloseable {
       case "BLUETOOTH_LAUTSPRECHER" : return 1;   // prefer over agreement rules
       case "KOENNT_ICH" : return 1;   // prefer over DE_VERBAGREEMENT
       case "WIR_HABE" : return 1;   // prefer over DE_VERBAGREEMENT
+      case "DAS_IST_GLAUBE_ICH_EGAL" : return 1;   // prefer over agreement rules
       case "ICH_KOENNT" : return 1;   // prefer over DE_VERBAGREEMENT
       case "HAT_DU" : return 1;   // prefer over agreement rules
       case "HAST_DICH" : return 1;   // prefer over agreement rules
@@ -351,6 +356,8 @@ public class German extends Language implements AutoCloseable {
       case "TAG_EIN_TAG_AUS": return 1; // prefer over agreement rules
       case "WERT_SEIN": return 1; // prefer over DE_AGREEMENT
       case "EBEN_FALLS": return 1;
+      case "DA_DRAUS": return 1;
+      case "AUSSER_ORDENTLICH": return 1;
       case "IN_UND_AUSWENDIG": return 1; // prefer over DE_CASE
       case "HIER_MIT": return 1; // prefer over agreement rules
       case "HIER_FUER": return 1; // prefer over agreement rules
@@ -410,7 +417,8 @@ public class German extends Language implements AutoCloseable {
       case "SPACE_BEFORE_OG": return -1; // higher prio than spell checker
       case "VERSEHENTLICHERWEISE": return -1; // higher prio than spell checker
       case "VERMOD_SKIP_VER_PKT": return -1; // less prio than casing rules
-      case "EINZELBUCHSTABE_PREMIUM": return -1;  // lower prio than "A_LA_CARTE"
+      case "N_NETTER_TYP": return -1; // higher prio than EINZELBUCHSTABE_PREMIUM and speller
+      case "EINZELBUCHSTABE_PREMIUM": return -2;  // lower prio than "A_LA_CARTE"
       case "ART_IND_ADJ_SUB": return -2;  // prefer DE_AGREEMENT rules
       case "KATARI": return -2; // higher prio than spell checker
       case "SCHOENE_WETTER": return -2; // prefer more specific rules that offer a suggestion (e.g. DE_AGREEMENT)
@@ -421,6 +429,7 @@ public class German extends Language implements AutoCloseable {
       case "ICH_INF_PREMIUM": return -2; // prefer more specific rules that offer a suggestion (e.g. SUBJECT_VERB_AGREEMENT)
       case "MEHRERE_WOCHE_PREMIUM": return -2;  // less prio than DE_AGREEMENT
       case "DOPPELTER_NOMINATIV": return -2;  // give precedence to wie-wir-wird confusion rules
+      case "KUDAMM": return -2;   // overwrite spell checker
       case "ALTERNATIVEN_FUER_ANGLIZISMEN" : return -2;   // overwrite spell checker
       case "ANGLIZISMUS_INTERNAL" : return -2;   // overwrite spell checker
       case "DOPPELUNG_VER_MOD_AUX": return -2;
@@ -430,7 +439,9 @@ public class German extends Language implements AutoCloseable {
       case "MEINSTE" : return -2;   // overwrite spell checker
       case "ZAHL_IM_WORT": return -2; //should not override rules like H2O
       case "ICH_LIEBS": return -2;  // higher prio than spell checker
-      case "ICH_GEHE_DU_BLEIBST": return -3; // prefer ICH_GLAUBE_FUER_EUCH
+      case "WENNS_UND_ABERS": return -2;  // higher prio than spell checker
+      case "ABERS_SATZANFANG": return -2;  // higher prio than spell checker
+      case "VERNEB": return -2;  // higher prio than spell checker
       case "GERMAN_SPELLER_RULE": return -3;  // assume most other rules are more specific and helpful than the spelling rule
       case "AUSTRIAN_GERMAN_SPELLER_RULE": return -3;  // assume most other rules are more specific and helpful than the spelling rule
       case "SWISS_GERMAN_SPELLER_RULE": return -3;  // assume most other rules are more specific and helpful than the spelling rule
@@ -457,6 +468,11 @@ public class German extends Language implements AutoCloseable {
       case "PUNKT_ENDE_ABSATZ": return -10;  // should never hide other errors, as chance for a false alarm is quite high
       case "KOMMA_VOR_RELATIVSATZ": return -10;
       case "VON_LEBENSLAEUFE": return -12; // less prio than AI
+      case "VER_WER_VER_3": return -12; // less prio than AI
+      case "PA_WAS": return -12; // less prio than AI
+      case "ICH_GEHE_DU_BLEIBST": return -12; // prefer ICH_GLAUBE_FUER_EUCH and less prio than AI
+      case "PROPERNOMSIN_VERIMPSIN": return -12; // less prio than AI
+      case "VER123_VERAUXMOD_TEST1": return -12; // less prio than AI to produce a single suggestion
       case "ZUSAMMENGESETZTE_VERBEN": return -12; // less prio than most more specific rules and AI
       case "PRP_VER_PRGK": return -13; // lower prio than ZUSAMMENGESETZTE_VERBEN
       case "COMMA_IN_FRONT_RELATIVE_CLAUSE": return -13; // prefer other rules (KONJUNKTION_DASS_DAS, ALL_DAS_WAS_KOMMA, AI) but higher prio than style
@@ -465,6 +481,7 @@ public class German extends Language implements AutoCloseable {
       case "BEI_VERB": return -14; // prefer case, spelling and AI rules
       case "MODALVERB_FLEKT_VERB": return -14; // prefer case, spelling and AI rules
       case "DATIV_NACH_PRP": return -14; // spelling and AI rules
+      case "DAT_ODER_AKK_NACH_PRP": return -14; // prefer more specific rules that offer a suggestion (A.I., spelling)
       case "SENT_START_SIN_PLU": return -14; // prefer more specific rules that offer a suggestion (A.I., spelling)
       case "SENT_START_PLU_SIN": return -14; // prefer more specific rules that offer a suggestion (A.I., spelling)
       case "VER_INFNOMEN": return -14;  // prefer spelling and AI rules
@@ -485,6 +502,7 @@ public class German extends Language implements AutoCloseable {
       case "VERB_IST": return -53; // less prio than comma rules and spell checker
       case "WAR_WERDEN": return -53; // less prio than comma rules
       case "INF_VER_MOD": return -53; // prefer case, spelling and AI rules
+      case "DOPPELTES_VERB": return -53; // prefer comma rules (including AI)
       case "VERB_FEM_SUBST": return -54; // prefer comma rules (including AI)
       case "SUBJUNKTION_KOMMA_2": return -54; // lower prio than KOMMA_ZWISCHEN_HAUPT_UND_NEBENSATZ and KOMMA_ZWISCHEN_HAUPT_UND_NEBENSATZ_2
       case "DOPPELUNG_GLEICHES_VERB": return -55; // prefer comma rules
@@ -492,11 +510,11 @@ public class German extends Language implements AutoCloseable {
       case "REPETITIONS_STYLE": return -60;
       case "MAN_SIEHT_SEHR_SCHOEN": return -14; // prefer over SEHR_SCHOEN
       // Category ids - make sure style issues don't hide overlapping "real" errors:
+      case "TYPOGRAPHY": return -14;
       case "COLLOQUIALISMS": return -15;
       case "STYLE": return -15;
       case "REDUNDANCY": return -15;
       case "GENDER_NEUTRALITY": return -15;
-      case "TYPOGRAPHY": return -15;
     }
     if (id.startsWith("CONFUSION_RULE_")) {
       return -1;
@@ -516,12 +534,13 @@ public class German extends Language implements AutoCloseable {
     if (id.startsWith("AI_DE_KOMMA")) {
       return -52; // prefer comma style rules and AI_DE_HYDRA_LEO_MISSING_COMMA
     }
+    if (id.startsWith("AI_DE_GGEC")) {
+      return 1;
+    }
     return super.getPriorityForId(id);
   }
 
   public boolean hasMinMatchesRules() {
     return true;
   }
-
-
 }

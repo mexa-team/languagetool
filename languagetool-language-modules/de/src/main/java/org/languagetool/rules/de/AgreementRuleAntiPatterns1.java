@@ -39,6 +39,13 @@ class AgreementRuleAntiPatterns1 {
       posRegex("SUB:.*")
     ),
     asList(
+      posRegex("(ART|PRO):.*"),   // "Wie viele Kolleg/-innen haben sie?"
+      new PatternTokenBuilder().posRegex("ADJ:.*").min(0).build(),
+      posRegex("SUB:.*"),
+      token("/"),
+      tokenRegex("-in|-innen")
+    ),
+    asList(
       token("wegen"),   //  "...und hatte wegen des vielen Trinkens Kopfschmerzen." (#4695)
       token("des"),
       token("vielen"),
@@ -79,6 +86,12 @@ class AgreementRuleAntiPatterns1 {
     asList(
       token("sowas"),   // "Wir können sowas Mittwoch machen."
       tokenRegex("Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag")
+    ),
+    asList(
+      token("bei"),   // "Es kann gut sein, dass bei sowas Probleme erkannt werden."
+      token("sowas"),
+      new PatternTokenBuilder().posRegex("ADJ:.*").min(0).build(),
+      posRegex("SUB:.*PLU.*")
     ),
     asList(
       token("beides"),   // "Beides Grund genug, es mal zu probieren."
@@ -843,7 +856,21 @@ class AgreementRuleAntiPatterns1 {
       regex("des|der|den|dem|die"),
       csToken("Kommando"),
       csRegex("Spezialkräften?")
+    ),
+    asList(  
+      token("auf"),
+      csRegex("die|den|das"),
+      csToken("Verlass"),
+      csRegex("ist|war|wäre?")
+    ),
+    asList(  
+      token("auf"),
+      csRegex("die|den|das"),
+      csToken("Verlass"),
+      csToken("zu"),
+      csToken("sein")
     )
+
   );
 
 }

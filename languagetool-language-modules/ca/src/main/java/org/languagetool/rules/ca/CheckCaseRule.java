@@ -33,6 +33,7 @@ public class CheckCaseRule  extends AbstractCheckCaseRule {
   
   public CheckCaseRule(ResourceBundle messages, Language language) {
     super(messages, language);
+    useSubRuleSpecificIds();
   }
 
   @Override
@@ -47,7 +48,7 @@ public class CheckCaseRule  extends AbstractCheckCaseRule {
 
   @Override
   public String getDescription() {
-    return "Comprova majúscules i minúscules";
+    return "Comprova majúscules i minúscules: $match";
   }
 
   @Override

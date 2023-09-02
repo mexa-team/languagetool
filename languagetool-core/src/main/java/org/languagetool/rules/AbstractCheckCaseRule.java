@@ -33,11 +33,13 @@ import java.util.concurrent.ArrayBlockingQueue;
  * @author Jaume Ortolà
  */
 public abstract class AbstractCheckCaseRule extends AbstractSimpleReplaceRule2 {
+  private final Language language;
 
   public AbstractCheckCaseRule(ResourceBundle messages, Language language) {
     super(messages, language);
-    super.setLocQualityIssueType(ITSIssueType.Typographical);
-    super.setCategory(Categories.CASING.getCategory(messages));
+    this.language = language;
+    setLocQualityIssueType(ITSIssueType.Typographical);
+    setCategory(Categories.CASING.getCategory(messages));
   }
 
   @Override
@@ -104,7 +106,7 @@ public abstract class AbstractCheckCaseRule extends AbstractSimpleReplaceRule2 {
           }
           ruleMatch = new RuleMatch(this, sentence, startPos, endPos, msg, getShort());
           if (subRuleSpecificIds) {
-            ruleMatch.setSpecificRuleId(StringTools.toId(getId() + "_" + correctPhrase));
+            ruleMatch.setSpecificRuleId(StringTools.toId(getId() + "_" + correctPhrase, language));
           }
           if (crtWordCount + sentStart == i) {
             // Capitalize suggestion at the sentence start

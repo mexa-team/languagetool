@@ -1,4 +1,66 @@
 #separatorRegExp=[\t;]
+check in;NCMS000
+check ins;NCMP000
+check out;NCMS000
+check outs;NCMP000
+vientos alisios;NCMP000
+reyes borbones;NCMP000
+Yanis Varoufakis;NPMSSP0
+acid house;NCMS000
+acid jazz;NCMS000
+Apollo Theater;NPMSO00
+Thomas Mann;NPMSSP0
+Blas Infante;NPMSSP0
+Candy Crush;NPCNO00
+Sala i Martín;NPCNSP0
+Papías de Hierápolis;NPMSSP0
+Venus de Milo;NPFSSP0
+Windows Phone;NPMSO00
+Santa Clos;NPMNSP0
+mise en abyme;NCFS000
+Standard de Lieja;NPMSO00
+Quick Pick Lotto;NPFSO00
+caldo tlalpeño;NCMS000
+Pi y Margall;NPMSSP0
+lun.;NCMS000
+vie.;NCMS000
+Properzia de Rossi;NPFSSP0
+Uber Eats;NPFSO00
+Beast Dance;NPFSO00
+panem et circenses;NCMS000
+vv.;NCMP000
+Belle Époque;NPFSO00
+Medias Rojas;NPMPO00
+Gran Concepción;NPMSG00
+Shajtar Donetsk;NPMSO00
+cía.;NCFS000
+lóg.;NCFS000
+c.ía;NCFS000
+quím.;NCFS000
+n.os;NCMP000
+adj.;NCMN000
+conj.;NCFN000
+admr.;NCMN00
+admra.;NCFN00
+ctra.;NCFS000
+pta.;NCFN000
+abg.do;NCMS000
+fdo.;NCMS000
+adm.or;NCMS000
+adm.ora;NCFS000
+art. gráf.;NCFP000
+late hit;NCMS000
+Reina del Plata;NPFSG00
+TED Talk;NPFSO00
+TED Talks;NPFPO00
+Les Paul;NPCNSP0
+home rule;NCFS000
+Zoo Posse;NPMNO00
+Albus Dumbledore;NPMSSP0
+sílex piròmac;NCMS000
+New York Post;NPMSO00
+tote bag;NCFS000
+tote bags;NCFP000
 Amin Maalouf;NPMSSP0
 Le Concert des Nations;NPMSO00
 Hespèrion XX;NPMSO00
@@ -1833,6 +1895,7 @@ Cap. Fed.	Y
 cap.º	Y
 capin melao	LOC_ADV
 cara a cara	LOC_ADV
+vis a vis	NCMN00
 cara abajo	LOC_ADV
 cara arriba	LOC_ADV
 carpe diem	NCMS000
@@ -2010,7 +2073,6 @@ D.ª	Y
 d/f	Y
 d/v	Y
 da capo	LOC_ADV
-dado que	LOC_CS
 dalái lama	NPMNSP0
 darse de alta	LOC_ADV
 dcha.	Y
@@ -2361,6 +2423,8 @@ JJ.PP.	NPMPO00
 RR.HH.	NCMP000
 DD.HH.	NCMP000
 CC.OO.	NPFPO00
+RR. SS.	NCFP000
+RR.SS.	NCFP000
 ef.	Y
 ej.	Y
 el acabose	NCMS000
@@ -2667,6 +2731,7 @@ J. C.	Y
 jamás de los jamases	LOC_ADV
 jamás por jamás	LOC_ADV
 jet lag	NCMS000
+jet lags	NCMP000
 jet set	NCFS000
 Jhs.	Y
 JJ. OO.	Y

@@ -41,8 +41,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Spanish extends Language implements AutoCloseable {
-
-  private static final Language DEFAULT_VARIANT = new Spanish();
   
   private LanguageModel languageModel;
 
@@ -66,7 +64,7 @@ public class Spanish extends Language implements AutoCloseable {
   }
   
   public Language getDefaultLanguageVariant() {
-    return DEFAULT_VARIANT;
+    return Languages.getLanguageForShortCode("es");
   }
 
   @NotNull
@@ -77,7 +75,7 @@ public class Spanish extends Language implements AutoCloseable {
 
   @Override
   public Disambiguator createDefaultDisambiguator() {
-    return new SpanishHybridDisambiguator();
+    return new SpanishHybridDisambiguator(getDefaultLanguageVariant());
   }
 
   @Override
@@ -127,7 +125,7 @@ public class Spanish extends Language implements AutoCloseable {
             new SpanishWrongWordInContextRule(messages),
             new LongSentenceRule(messages, userConfig, 60),
             new LongParagraphRule(messages, this, userConfig),
-            new SimpleReplaceRule(messages),
+            new SimpleReplaceRule(messages, this),
             new SimpleReplaceVerbsRule(messages, this),
             new SpanishWordRepeatBeginningRule(messages, this),
             new CompoundRule(messages, this, userConfig),
@@ -196,11 +194,13 @@ public class Spanish extends Language implements AutoCloseable {
   
   @Override
   protected int getPriorityForId(String id) {
-    if (id.startsWith("ES_SIMPLE_REPLACE")) {
-      id = "ES_SIMPLE_REPLACE";
+    if (id.startsWith("ES_SIMPLE_REPLACE_SIMPLE")) {
+      return 30;
+    }
+    if (id.startsWith("ES_COMPOUNDS")) {
+      return 50;
     }
     switch (id) {
-      case "ES_COMPOUNDS": return 50;
       case "CONFUSIONS2": return 50; // greater than CONFUSIONS
       case "RARE_WORDS": return 50;
       case "LOS_MAPUCHE": return 50;
@@ -220,7 +220,6 @@ public class Spanish extends Language implements AutoCloseable {
       case "POR_CIERTO": return 30;
       case "DEGREE_CHAR": return 30; // greater than SPACE_UNITIES
       case "LO_LOS": return 30;
-      case "ES_SIMPLE_REPLACE": return 30; // greater than typography rules
       case "ETCETERA": return 30; // greater than other typography rules
       case "P_EJ": return 30; // greater than other typography rules
       case "SE_CREO2": return 25; 
@@ -234,12 +233,14 @@ public class Spanish extends Language implements AutoCloseable {
       case "AGREEMENT_DET_NOUN": return 15;
       //case "PRONOMBRE_SIN_VERBO": return 20;
       case "AGREEMENT_DET_ADJ": return 10;
+      case "CONFUSION_ES_SE": return 20; //lower than diacrtics rules
       case "HALLA_HAYA": return 10;
       case "VALLA_VAYA": return 10;
       case "SI_AFIRMACION": return 10; // less than DIACRITICS
       case "TE_TILDE2": return 10; // less than PRONOMBRE_SIN_VERBO
       case "SEPARADO": return 1;
-      case "ES_SPLIT_WORDS": return -10; 
+      case "ES_SPLIT_WORDS": return -10;
+      case "U_NO": return -10;
       case "E_EL": return -10;
       case "EL_TILDE": return -10;
       case "SINGLE_CHARACTER": return -15; // less than ES_SPLIT_WORDS
@@ -254,12 +255,14 @@ public class Spanish extends Language implements AutoCloseable {
       case "MULTI_ADJ": return -30;
       case "SUBJUNTIVO_INCORRECTO": return -40;
       case "COMMA_SINO": return -40;
+      case "COMMA_SINO2": return -40;
       case "VOSEO": return -40;
       case "REPETITIONS_STYLE": return -50;
       case "MORFOLOGIK_RULE_ES": return -100;
       case "PHRASE_REPETITION": return -150;
       case "SPANISH_WORD_REPEAT_RULE": return -150;
       case "UPPERCASE_SENTENCE_START": return -200;
+      case "ES_QUESTION_MARK": return -250;
     }
 
     if (id.startsWith("AI_ES_HYDRA_LEO")) { // prefer more specific rules (also speller)

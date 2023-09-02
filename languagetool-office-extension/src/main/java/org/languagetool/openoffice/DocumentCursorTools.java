@@ -19,7 +19,9 @@
 package org.languagetool.openoffice;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 import org.languagetool.openoffice.DocumentCache.TextParagraph;
@@ -61,11 +63,8 @@ import com.sun.star.uno.UnoRuntime;
  */
 class DocumentCursorTools {
   
-  public static enum TextType {
-    NORMAL,
-    HEADING,
-    AUTOMATIC
-  };
+  public static int TEXT_TYPE_NORMAL = -1;
+  public static int TEXT_TYPE_AUTOMATIC = -2;
   
   final static String HeaderFooterTypes[] = { "HeaderText", 
       "HeaderTextRight",
@@ -81,15 +80,24 @@ class DocumentCursorTools {
   
   private boolean isCheckedSortedTextId = false;
   private boolean hasSortedTextId = false;
+  private boolean isDisposed = false;
 
   private XParagraphCursor xPCursor;
   private XTextCursor xTextCursor;
   private XTextDocument curDoc;
   
   DocumentCursorTools(XComponent xComponent) {
-    curDoc = UnoRuntime.queryInterface(XTextDocument.class, xComponent);
-    xTextCursor = getCursor(xComponent);
-    xPCursor = getParagraphCursor(xComponent);
+    isBusy++;
+    try {
+      if (!isDisposed) {
+        curDoc = UnoRuntime.queryInterface(XTextDocument.class, xComponent);
+        OfficeTools.waitForLtDictionary();
+        xTextCursor = getCursor(xComponent);
+        xPCursor = getParagraphCursor(xComponent);
+      }
+    } finally {
+      isBusy--;
+    }
   }
   
   /**
@@ -99,6 +107,7 @@ class DocumentCursorTools {
     xPCursor = null;
     xTextCursor = null;
     curDoc = null;
+    isDisposed = true;
   }
 
   /** 
@@ -268,7 +277,7 @@ class DocumentCursorTools {
     isBusy++;
     try {
       List<String> allParas = new ArrayList<>();
-      List<Integer> headingNumbers = new ArrayList<Integer>();
+      Map<Integer, Integer> headingNumbers = new HashMap<Integer, Integer>();
       List<Integer> automaticTextParagraphs = new ArrayList<Integer>();
       List<Integer> sortedTextIds = null;
       List<List<Integer>> deletedCharacters = new ArrayList<List<Integer>>();
@@ -286,13 +295,13 @@ class DocumentCursorTools {
           sortedTextIds = new ArrayList<Integer>();
         }
       }
-      allParas.add(xPCursor.getString());
+      allParas.add(new String(xPCursor.getString()));
       deletedCharacters.add(getDeletedCharacters(xPCursor));
-      TextType textType = getTextType();
-      if (textType == TextType.HEADING) {
-        headingNumbers.add(paraNum);
-      } else if (textType == TextType.AUTOMATIC) {
-        headingNumbers.add(paraNum);
+      int textType = getTextType();
+      if (textType >= 0) {
+        headingNumbers.put(paraNum, textType);
+      } else if (textType == TEXT_TYPE_AUTOMATIC) {
+        headingNumbers.put(paraNum, 0);
         automaticTextParagraphs.add(paraNum);
       }
       if (sortedTextIds != null) {
@@ -301,14 +310,14 @@ class DocumentCursorTools {
       while (xPCursor.gotoNextParagraph(false)) {
         xPCursor.gotoStartOfParagraph(false);
         xPCursor.gotoEndOfParagraph(true);
-        allParas.add(xPCursor.getString());
+        allParas.add(new String(xPCursor.getString()));
         deletedCharacters.add(getDeletedCharacters(xPCursor));
         paraNum++;
         textType = getTextType();
-        if (textType == TextType.HEADING) {
-          headingNumbers.add(paraNum);
-        } else if (textType == TextType.AUTOMATIC) {
-          headingNumbers.add(paraNum);
+        if (textType >= 0) {
+          headingNumbers.put(paraNum, textType);
+        } else if (textType == TEXT_TYPE_AUTOMATIC) {
+          headingNumbers.put(paraNum, 0);
           automaticTextParagraphs.add(paraNum);
         } 
         if (sortedTextIds != null) {
@@ -327,13 +336,13 @@ class DocumentCursorTools {
   /**
    * Paragraph is Header or Title
    */
-  private TextType getTextType() {
+  private int getTextType() {
     String paraStyleName = null;
     XPropertySet xParagraphPropertySet = null;
     try {
       xParagraphPropertySet = UnoRuntime.queryInterface(XPropertySet.class, xPCursor.getStart());
       if (xParagraphPropertySet == null) {
-        return TextType.NORMAL;
+        return TEXT_TYPE_NORMAL;
       }
       Object o = xParagraphPropertySet.getPropertyValue("ParaStyleName");
       if (o != null) {
@@ -341,7 +350,7 @@ class DocumentCursorTools {
       }
     } catch (Throwable e) {
       MessageHandler.printException(e);
-      return TextType.NORMAL;
+      return TEXT_TYPE_NORMAL;
     }
     try {
       XTextSection xTextSection = UnoRuntime.queryInterface(XTextSection.class, xParagraphPropertySet.getPropertyValue("TextSection"));
@@ -349,19 +358,35 @@ class DocumentCursorTools {
         xParagraphPropertySet = UnoRuntime.queryInterface(XPropertySet.class, xTextSection);
         Object o = xParagraphPropertySet.getPropertyValue("IsProtected");
         if (o != null && (boolean) o) {
-          return TextType.AUTOMATIC;
+          return TEXT_TYPE_AUTOMATIC;
         }
       }
     } catch (Throwable e) {
       //  if there is an exception go on with analysis - TextType is not automatic
     }
-    if (paraStyleName != null && (paraStyleName.startsWith("Heading") || paraStyleName.equals("Title") || paraStyleName.equals("Subtitle"))) {
-      return TextType.HEADING;
+    if (paraStyleName == null) {
+      return TEXT_TYPE_NORMAL;
+    }
+    if (paraStyleName.equals("Title") || paraStyleName.equals("Subtitle")|| paraStyleName.equals("Heading")) {
+      return 0;
+    } else if (paraStyleName.startsWith("Heading")) {
+      String numberString = paraStyleName.substring(7).trim();
+      if (numberString.isEmpty()) { 
+        return 0;
+      }
+      int ret = 0;
+      try {
+        ret = Integer.parseInt(numberString);
+      } catch (Throwable e) {
+//        MessageHandler.printToLogFile("DocumentCursorTools: getTextType: paraStyleName: " + paraStyleName);
+//        MessageHandler.printException(e);
+      }
+      return ret;
     }
     else if (paraStyleName != null && paraStyleName.startsWith("Contents")) {
-      return TextType.AUTOMATIC;
+      return TEXT_TYPE_AUTOMATIC;
     } else {
-      return TextType.NORMAL;
+      return TEXT_TYPE_NORMAL;
     }
   }
   
@@ -442,7 +467,7 @@ class DocumentCursorTools {
     do {
       xParagraphCursor.gotoStartOfParagraph(false);
       xParagraphCursor.gotoEndOfParagraph(true);
-      sText.add(xParagraphCursor.getString());
+      sText.add(new String(xParagraphCursor.getString()));
       deletedCharacters.add(getDeletedCharacters(xParagraphCursor));
       if (sortedTextIds != null) {
         sortedTextIds.add(getSortedTextId(xParagraphCursor));
@@ -452,16 +477,37 @@ class DocumentCursorTools {
   }
   
   /** 
+   * get all paragraphs as a list of strings
+   */
+  private List<String> getAllParagraphsOfText(XText xText) {
+    XTextCursor xTextCursor = xText.createTextCursor();
+    XParagraphCursor xParagraphCursor = UnoRuntime.queryInterface(XParagraphCursor.class, xTextCursor);
+    List<String> sText = new ArrayList<String>();
+    if (xParagraphCursor == null) {
+      return sText;
+    }
+    xParagraphCursor.gotoStart(false);
+    do {
+      xParagraphCursor.gotoStartOfParagraph(false);
+      xParagraphCursor.gotoEndOfParagraph(true);
+      sText.add(new String(xParagraphCursor.getString()));
+    } while (xParagraphCursor.gotoNextParagraph(false));
+    return sText;
+  }
+  
+  /** 
    * Get the number of all paragraphs of XText
    */
   private static int getNumberOfAllParagraphsOfText(XText xText) {
     int num = 0;
     XTextCursor xTextCursor = xText.createTextCursor();
     XParagraphCursor xParagraphCursor = UnoRuntime.queryInterface(XParagraphCursor.class, xTextCursor);
-    xParagraphCursor.gotoStart(false);
-    do {
-      num++;
-    } while (xParagraphCursor.gotoNextParagraph(false));
+    if (xParagraphCursor != null) {
+      xParagraphCursor.gotoStart(false);
+      do {
+        num++;
+      } while (xParagraphCursor.gotoNextParagraph(false));
+    }
     return num;
   }
   
@@ -473,7 +519,8 @@ class DocumentCursorTools {
     isBusy++;
     try {
       List<String> sText = new ArrayList<String>();
-      List<Integer> headingNumbers = new ArrayList<Integer>();
+      Map<Integer, Integer> headingNumbers = new HashMap<Integer, Integer>();
+      List<Integer> hNumbers = new ArrayList<Integer>();
       List<List<Integer>> deletedCharacters = new ArrayList<List<Integer>>();
       List<Integer> sortedTextIds = null;
       XTextFramesSupplier xTextFrameSupplier = UnoRuntime.queryInterface(XTextFramesSupplier.class, curDoc);
@@ -484,12 +531,15 @@ class DocumentCursorTools {
         Object o = xNamedFrames.getByName(name);
         XText xFrameText = UnoRuntime.queryInterface(XText.class,  o);
         addAllParagraphsOfText(xFrameText, sTxt, delCharacters, sortedTextIds);
-        for (int i = 0; i < headingNumbers.size(); i++) {
-          headingNumbers.set(i, headingNumbers.get(i) + sTxt.size());
+        for (int i = 0; i < hNumbers.size(); i++) {
+          hNumbers.set(i, hNumbers.get(i) + sTxt.size());
         }
-        headingNumbers.add(0, 0);
+        hNumbers.add(0, 0);
         sText.addAll(0, sTxt);
         deletedCharacters.addAll(0, delCharacters);
+        for (int i = 0; i < hNumbers.size(); i++) {
+          headingNumbers.put(hNumbers.get(i), 0);
+        }
       }
       return new DocumentText(sText, headingNumbers, new ArrayList<Integer>(), sortedTextIds, deletedCharacters);
     } catch (Throwable t) {
@@ -533,7 +583,7 @@ class DocumentCursorTools {
     isBusy++;
     try {
       List<String> sText = new ArrayList<String>();
-      List<Integer> headingNumbers = new ArrayList<Integer>();
+      Map<Integer, Integer> headingNumbers = new HashMap<Integer, Integer>();
       List<Integer> sortedTextIds = null;
       List<List<Integer>> deletedCharacters = new ArrayList<List<Integer>>();
       XDrawPageSupplier xDrawPageSupplier = UnoRuntime.queryInterface(XDrawPageSupplier.class, curDoc);
@@ -555,11 +605,56 @@ class DocumentCursorTools {
           XText xShapeText = UnoRuntime.queryInterface(XText.class, xShape);
           if (xShapeText != null) {
             sortedTextIds = addAllParagraphsOfText(xShapeText, sText, deletedCharacters, sortedTextIds);
-            headingNumbers.add(sText.size());
+            headingNumbers.put(sText.size(), 0);
           }
         }
       }
       return new DocumentText(sText, headingNumbers, new ArrayList<Integer>(), sortedTextIds, deletedCharacters);
+    } catch (Throwable t) {
+      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught and printed to log file
+      return null;           // Return null as method failed
+    } finally {
+      isBusy--;
+    }
+  }
+  
+  /** 
+   * Returns all paragraphs of all text shapes of a document
+   */
+  public List<String> getTextOfShapes(List<Integer> nPara) {
+    isBusy++;
+    try {
+      List<String> sText = new ArrayList<String>();
+      XDrawPageSupplier xDrawPageSupplier = UnoRuntime.queryInterface(XDrawPageSupplier.class, curDoc);
+      if (xDrawPageSupplier == null) {
+        MessageHandler.printToLogFile("XDrawPageSupplier == null");
+        return sText;
+      }
+      XDrawPage xDrawPage = xDrawPageSupplier.getDrawPage();
+      if (xDrawPage == null) {
+        MessageHandler.printToLogFile("XDrawPage == null");
+        return sText;
+      }
+      XShapes xShapes = UnoRuntime.queryInterface(XShapes.class, xDrawPage);
+      int nShapes = xShapes.getCount();
+      int num = 0;
+      for(int j = 0; j < nShapes; j++) {
+        Object oShape = xShapes.getByIndex(j);
+        XShape xShape = UnoRuntime.queryInterface(XShape.class, oShape);
+        if (xShape != null) {
+          XText xShapeText = UnoRuntime.queryInterface(XText.class, xShape);
+          if (xShapeText != null) {
+            List<String> tmpText = getAllParagraphsOfText(xShapeText);
+            for(String text : tmpText) {
+              if (nPara.contains(num)) {
+                sText.add(text);
+              }
+              num++;
+            }
+          }
+        }
+      }
+      return sText;
     } catch (Throwable t) {
       MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught and printed to log file
       return null;           // Return null as method failed
@@ -633,7 +728,7 @@ class DocumentCursorTools {
     isBusy++;
     try {
       List<String> sText = new ArrayList<String>();
-      List<Integer> headingNumbers = new ArrayList<Integer>();
+      Map<Integer, Integer> headingNumbers = new HashMap<Integer, Integer>();
       List<Integer> sortedTextIds = null;
       XIndexAccess xTables = getIndexAccessOfAllTables();
       List<List<Integer>> deletedCharacters = new ArrayList<List<Integer>>();
@@ -644,12 +739,48 @@ class DocumentCursorTools {
           // Get all Cells of Tables
           for (String cellName : xTable.getCellNames()) {
             XText xTableText = UnoRuntime.queryInterface(XText.class, xTable.getCellByName(cellName) );
-            headingNumbers.add(sText.size());
+            headingNumbers.put(sText.size(), 0);
             sortedTextIds = addAllParagraphsOfText(xTableText, sText, deletedCharacters, sortedTextIds);
           }
         }
       }
       return new DocumentText(sText, headingNumbers, new ArrayList<Integer>(), sortedTextIds, deletedCharacters);
+    } catch (Throwable t) {
+      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught and printed to log file
+      return null;           // Return null as method failed
+    } finally {
+      isBusy--;
+    }
+  }
+  
+  /** 
+   * Returns n paragraphs of tables
+   * Note: nPara stores the numbers of textparagraphs
+   */
+  public List<String> getTextOfTables(List<Integer> nPara) {
+    isBusy++;
+    try {
+      List<String> sText = new ArrayList<String>();
+      XIndexAccess xTables = getIndexAccessOfAllTables();
+      if (xTables != null) {
+        // Get all Tables of Document
+        int num = 0;
+        for (int i = 0; i < xTables.getCount(); i++) {
+          XTextTable xTable = UnoRuntime.queryInterface(XTextTable.class, xTables.getByIndex(i));
+          // Get all Cells of Tables
+          for (String cellName : xTable.getCellNames()) {
+            XText xTableText = UnoRuntime.queryInterface(XText.class, xTable.getCellByName(cellName) );
+            List<String> tmpText = getAllParagraphsOfText(xTableText);
+            for(String text : tmpText) {
+              if (nPara.contains(num)) {
+                sText.add(text);
+              }
+              num++;
+            }
+          }
+        }
+      }
+      return sText;
     } catch (Throwable t) {
       MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught and printed to log file
       return null;           // Return null as method failed
@@ -691,7 +822,7 @@ class DocumentCursorTools {
    */
   public DocumentText getTextOfAllFootnotes() {
     List<String> sText = new ArrayList<String>();
-    List<Integer> headingNumbers = new ArrayList<Integer>();
+    Map<Integer, Integer> headingNumbers = new HashMap<Integer, Integer>();
     List<Integer> sortedTextIds = null;
     List<List<Integer>> deletedCharacters = new ArrayList<List<Integer>>();
     isBusy++;
@@ -704,7 +835,7 @@ class DocumentCursorTools {
         for (int i = 0; i < xFootnotes.getCount(); i++) {
           XFootnote xFootnote = UnoRuntime.queryInterface(XFootnote.class, xFootnotes.getByIndex(i));
           XText xFootnoteText = UnoRuntime.queryInterface(XText.class, xFootnote);
-          headingNumbers.add(sText.size());
+          headingNumbers.put(sText.size(), 0);
           sortedTextIds = addAllParagraphsOfText(xFootnoteText, sText, deletedCharacters, sortedTextIds);
         }
       }
@@ -749,7 +880,7 @@ class DocumentCursorTools {
    */
   public DocumentText getTextOfAllEndnotes() {
     List<String> sText = new ArrayList<String>();
-    List<Integer> headingNumbers = new ArrayList<Integer>();
+    Map<Integer, Integer> headingNumbers = new HashMap<Integer, Integer>();
     List<Integer> sortedTextIds = null;
     List<List<Integer>> deletedCharacters = new ArrayList<List<Integer>>();
     isBusy++;
@@ -762,7 +893,7 @@ class DocumentCursorTools {
         for (int i = 0; i < xEndnotes.getCount(); i++) {
           XFootnote xEndnote = UnoRuntime.queryInterface(XFootnote.class, xEndnotes.getByIndex(i));
           XText xFootnoteText = UnoRuntime.queryInterface(XText.class, xEndnote);
-          headingNumbers.add(sText.size());
+          headingNumbers.put(sText.size(), 0);
           sortedTextIds = addAllParagraphsOfText(xFootnoteText, sText, deletedCharacters, sortedTextIds);
         }
       }
@@ -840,7 +971,7 @@ class DocumentCursorTools {
     isBusy++;
     try {
       List<String> sText = new ArrayList<String>();
-      List<Integer> headingNumbers = new ArrayList<Integer>();
+      Map<Integer, Integer> headingNumbers = new HashMap<Integer, Integer>();
       List<Integer> sortedTextIds = null;
       List<List<Integer>> deletedCharacters = new ArrayList<List<Integer>>();
       List<XPropertySet> xPagePropertySets = getPagePropertySets();
@@ -861,8 +992,8 @@ class DocumentCursorTools {
                       || (i == 7 && !firstIsShared)))) {
                 XText xHeaderText = UnoRuntime.queryInterface(XText.class, xPagePropertySet.getPropertyValue(HeaderFooterTypes[i]));
                 if (xHeaderText != null && !xHeaderText.getString().isEmpty()) {
-                  if (!headingNumbers.contains(sText.size())) {
-                    headingNumbers.add(sText.size());
+                  if (!headingNumbers.containsKey(sText.size())) {
+                    headingNumbers.put(sText.size(), 0);
                   }
                   sortedTextIds = addAllParagraphsOfText(xHeaderText, sText, deletedCharacters, sortedTextIds);
                 }
@@ -1036,14 +1167,16 @@ class DocumentCursorTools {
                 if (xShapeText != null) {
                   XTextCursor xTextCursor = xShapeText.createTextCursor();
                   XParagraphCursor xParagraphCursor = UnoRuntime.queryInterface(XParagraphCursor.class, xTextCursor);
-                  xParagraphCursor.gotoStart(false);
-                  while (nPara < number && xParagraphCursor.gotoNextParagraph(false)){
+                  if (xParagraphCursor != null) {
+                    xParagraphCursor.gotoStart(false);
+                    while (nPara < number && xParagraphCursor.gotoNextParagraph(false)){
+                      nPara++;
+                    }
+                    if (nPara == number) {
+                      return xParagraphCursor;
+                    }
                     nPara++;
                   }
-                  if (nPara == number) {
-                    return xParagraphCursor;
-                  }
-                  nPara++;
                 }
               }
             }
@@ -1338,24 +1471,31 @@ class DocumentCursorTools {
   }
   
   /**
+   *  Reset the busy flag
+   */
+  public static void reset() {
+    isBusy = 0;
+  }
+  
+  /**
    * Class to give back the text and the headings under the specified cursor
    */
   public static class DocumentText {
     List<String> paragraphs;
-    List<Integer> headingNumbers;
+    Map<Integer, Integer> headingNumbers;
     List<Integer> automaticTextParagraphs;
     List<Integer> sortedTextIds;
     List<List<Integer>> deletedCharacters;
     
     DocumentText() {
       this.paragraphs = new ArrayList<String>();
-      this.headingNumbers = new ArrayList<Integer>();
+      this.headingNumbers = new HashMap<Integer, Integer>();
       this.automaticTextParagraphs = new ArrayList<Integer>();
       this.sortedTextIds = null;
       this.deletedCharacters = new ArrayList<List<Integer>>();
     }
     
-    DocumentText(List<String> paragraphs, List<Integer> headingNumbers, List<Integer> automaticTextParagraphs, 
+    DocumentText(List<String> paragraphs, Map<Integer, Integer> headingNumbers, List<Integer> automaticTextParagraphs, 
         List<Integer> sortedTextIds, List<List<Integer>> deletedCharacters) {
       this.paragraphs = paragraphs;
       this.headingNumbers = headingNumbers;

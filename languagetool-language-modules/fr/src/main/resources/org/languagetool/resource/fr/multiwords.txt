@@ -1,5 +1,6 @@
 #French multiwords file used for chunking
 #separatorRegExp=[\t;]
+Intel Core; Z m sp
 home page;N f s
 point presse; N m s
 points presse; N m p
@@ -453,6 +454,7 @@ US Open;Z e sp
 junior class;N f s
 junior classes;N f p
 master class;N f sp
+master classes;N f p
 Star Trek;Z m s
 compte entreprise;N m s
 comptes entreprise;N m p
@@ -2840,3 +2842,73 @@ Jean-Jacques Goldman	Z m s
 Place de la Concorde; N f s
 Get 27; N m s
 Alain Rey	Z m s
+Boris Vian	Z m s
+Jacques Brel	Z m s
+Annie Ernaux	Z f s
+Roman de Renart; N m s
+Père Goriot; N m s
+Mercedes Benz; Z e sp
+Jean-Loup Chiflet	Z m s
+Tristesse d’Olympio	Z e sp
+Jean Echenoz	Z m s
+La Henriade;Z e s
+Pierre Dac	Z m s
+Pierre Desproges	Z m s
+Philippe Geluck	Z m s
+Les Contemplations; Z e sp
+Blaise Cendrars	Z m s
+boule Quiès; N f s
+boules Quiès; N f p
+Erik Orsenna	Z m s
+Henry Troyat	Z m s
+James Prescott Joule	Z m s
+John McAdam	Z m s
+Joseph Ignace Guillotin	Z m s
+Julien Gracq	Z m s
+dune du Pilat; N f s
+Louis de Béchameil	Z m s
+Oraison funèbre de Henriette-Anne d’Angleterre; N f s
+Philippe Noiret	Z m s
+Raymond Devos	Z m s
+René Etiemble	Z m s
+Thomas Pesquet	Z m s
+to-do list; N f s
+Yann Quéffélec	Z m s
+Yves Montand	Z m s
+Zone à Faible Émission; N f s
+Zones à Faible Émission; N f p
+Édith Piaf	Z f s
+Marie Darieussecq	Z f s
+Alfred Jarry	Z m s
+Jacques II de Chabannes de La Palice	Z m s
+Jean Lescure	Z m s
+Bobby Lapointe	Z m s
+Pierre de Coulevain	Z m s
+Marceline Desbordes-Valmore	Z f s
+Joachim du Bellay	Z m s
+Georges Pérec	Z m s
+Danielle Grondein	Z f s
+William Gallas	Z m s
+Marcus Thuram	Z m s
+Gaston Esnault	Z m s
+Vicomte Ponson du Terrail	Z m s
+Jean-Pierre Claris de Florian	Z m s
+Christophe Michalak	Z m s
+Cédric Grolet	Z m s
+Philippe Conticini	Z m s
+Mr Bean	Z m s
+Vasco de Gama	Z m s
+MaitressAdeline	Z f s
+Nike Metcon	Z m s
+Jean-Alexandre 	Z m s
+Le Cid	Z e s
+buyer persona; N e sp
+making of; N m s
+has been; N m s
+has been; J e sp
+mass media; N m p
+mass medias; N m p
+hot money; N m s
+crash test; N m s
+crash tests; N m p
+top secret; J e sp

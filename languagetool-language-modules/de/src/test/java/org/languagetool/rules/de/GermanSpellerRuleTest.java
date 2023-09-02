@@ -58,6 +58,31 @@ public class GermanSpellerRuleTest {
   //
   
   @Test
+  public void testIgnoreMisspelledWord() throws IOException {
+    GermanSpellerRule rule = new GermanSpellerRule(TestTools.getMessages("de"), GERMAN_DE);
+    assertThat(rule.ignorePotentiallyMisspelledWord("Prioritätsdings"), is(true));
+    assertThat(rule.ignorePotentiallyMisspelledWord("Prioritätsdings."), is(true));
+    assertThat(rule.ignorePotentiallyMisspelledWord("Haltungsschäden"), is(true));
+    assertThat(rule.ignorePotentiallyMisspelledWord("haltungschäden"), is(false));  // lowercase
+    assertThat(rule.ignorePotentiallyMisspelledWord("Haltungschäden"), is(false));  // missing infix-s
+    assertThat(rule.ignorePotentiallyMisspelledWord("Hultungsschäden"), is(false));  // misspelling in first word
+    assertThat(rule.ignorePotentiallyMisspelledWord("Haltungsscheden"), is(false));  // misspelling in second part
+    assertThat(rule.ignorePotentiallyMisspelledWord("HaltungsSchäden"), is(false));
+    assertThat(rule.ignorePotentiallyMisspelledWord("Haltungsei"), is(false));  // second part too short
+    assertThat(rule.ignorePotentiallyMisspelledWord("Leistungsnach"), is(false));  // second part not a noun
+    assertThat(rule.ignorePotentiallyMisspelledWord("Leistungsgegangen"), is(false));
+    assertThat(rule.ignorePotentiallyMisspelledWord("Leistungsgegangen."), is(false));
+    assertThat(rule.ignorePotentiallyMisspelledWord("Leistungsversuchstest"), is(false));  // 3 parts not yet supported
+    assertThat(rule.ignorePotentiallyMisspelledWord("Leistung"), is(false));  // not a compound
+    assertThat(rule.ignorePotentiallyMisspelledWord("Leistungs"), is(false));  // not a compound
+    assertThat(rule.ignorePotentiallyMisspelledWord("Anschauungswiese"), is(false));  // from prohibit.txt
+    // special case:
+    assertThat(rule.ignorePotentiallyMisspelledWord("Actionsspaß"), is(false));
+    assertThat(rule.ignorePotentiallyMisspelledWord("Jungsnamen"), is(false));
+    assertThat(rule.ignorePotentiallyMisspelledWord("Aufschwungsphase"), is(false));
+  }
+
+  @Test
   public void testArtig() throws IOException {
     GermanSpellerRule rule = new GermanSpellerRule(TestTools.getMessages("de"), GERMAN_DE);
     accept("zigarrenartig", rule);
@@ -176,6 +201,8 @@ public class GermanSpellerRuleTest {
         is("[glückliche, glücklichst]"));
     assertThat(rule.match(lt.getAnalyzedSentence("glückklicher"))[0].getSuggestedReplacements().toString(),
         is("[glücklicher, glücklichst]"));
+    assertThat(rule.match(lt.getAnalyzedSentence("großdenken"))[0].getSuggestedReplacements().toString(),
+        is("[Großdenken, groß denken, großdenkend, Grasstängel, Grasstängeln, Tröstungen, großdenkende, großtunden, großtäten, tröstenden]"));
   }
 
   @Test
@@ -651,8 +678,12 @@ public class GermanSpellerRuleTest {
     if (expected == null) {
       assertThat("Matches: " + matches[0].getSuggestedReplacements(), matches[0].getSuggestedReplacements().size(), is(0));
     } else {
-      assertThat("Matches: " + matches.length + ", Suggestions of first match: " +
-        matches[0].getSuggestedReplacements(), matches[0].getSuggestedReplacements().get(0), is(expected));
+      if (matches.length == 0) {
+        fail("Matches: " + matches.length + ", expected at least one");
+      } else {
+        assertThat("Matches: " + matches.length + ", Suggestions of first match: " +
+          matches[0].getSuggestedReplacements(), matches[0].getSuggestedReplacements().get(0), is(expected));
+      }
     }
   }
 

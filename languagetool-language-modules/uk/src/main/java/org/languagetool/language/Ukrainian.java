@@ -39,6 +39,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class Ukrainian extends Language {
+  public static final Pattern IGNORED_CHARS = Pattern.compile("[\u00AD\u0301]");
+
   private static final List<String> RULE_FILES = Arrays.asList(
       "grammar-spelling.xml",
       "grammar-grammar.xml",
@@ -54,7 +56,7 @@ public class Ukrainian extends Language {
 
   @Override
   public Pattern getIgnoredCharactersRegex() {
-    return Pattern.compile("[\u00AD\u0301]");
+    return IGNORED_CHARS;
   }
 
   @Override
@@ -141,7 +143,7 @@ public class Ukrainian extends Language {
             Example.fixed("Ми обідали борщем<marker>,</marker> пловом і салатом,— все смачне")),
 
         // TODO: does not handle dot in abbreviations in the middle of the sentence, and also !.., ?..
-        new UppercaseSentenceStartRule(messages, this,
+        new UkrainianUppercaseSentenceStartRule(messages, this,
             Example.wrong("<marker>речення</marker> має починатися з великої."),
             Example.fixed("<marker>Речення</marker> має починатися з великої")),
 
@@ -170,15 +172,15 @@ public class Ukrainian extends Language {
 
         new MixedAlphabetsRule(messages),
 
-        new SimpleReplaceSoftRule(messages),
+        new SimpleReplaceSoftRule(messages, this),
         new SimpleReplaceRenamedRule(messages),
         getSpellingReplacementRule(messages),
-        new SimpleReplaceRule(messages, morfologikSpellerRule)
+        new SimpleReplaceRule(messages, morfologikSpellerRule, this)
     );
   }
 
   protected Rule getSpellingReplacementRule(ResourceBundle messages) throws IOException {
-    return new SimpleReplaceSpelling1992Rule(messages);
+    return new SimpleReplaceSpelling1992Rule(messages, this);
   }
 
   @Override
