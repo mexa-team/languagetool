@@ -3,6 +3,8 @@
 # <phrase> is what the text is searched for. <replacement> is the suggestion shown to the user.
 # [message] is an optional message shown to the user (optional).
 # Ensure the message (if applicable) is separated by a tab from the last suggestion.
+# NOTE: Do not use for words that users might have added to their spelling dictionary,
+#       as this rule would then still be triggered.
 # <phrase> is searched for case-insensitively.
 # Both <phrase> and <replacement> can contain more than one value when separated by '|'.
 # Example:
@@ -477,3 +479,17 @@ gestriffen=gestreift	Meinten Sie "gestreift", das Partizip des Verbs "streifen"?
 Romeo Lavia=Roméo Lavia
 freigeschalten=freigeschaltet	Meinten Sie "freigeschaltet", das Partizip des Verbs "freischalten"?
 Gerald Darmanin=Gérald Darmanin
+Hugo Ekitike=Hugo Ekitiké
+Goncalo Ramos=Gonçalo Ramos
+Ousmane Dembele=Ousmane Dembélé
+Luka Jovic=Luka Jović
+Türkisch Airline=Turkish Airlines
+Türkisch Airlines=Turkish Airlines
+St Germain=St. Germain
+Hauck Aufhauser Lampe=Hauck Aufhäuser Lampe
+F35 Kampfjet=F-35-Kampfjet
+F35 Kampfjets=F-35-Kampfjets
+F35-Kampfjet=F-35-Kampfjet
+F35-Kampfjets=F-35-Kampfjets
+Por Larranaga Montecarlos=Por Larrañaga Montecarlos
+Fruit Loops=Froot Loops	Meinten Sie das Frühstücksmüsli von Kellogg's?

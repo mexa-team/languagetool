@@ -38,7 +38,6 @@ import org.languagetool.rules.spelling.morfologik.MorfologikMultiSpeller;
 import org.languagetool.synthesis.Synthesizer;
 import org.languagetool.tagging.Tagger;
 import org.languagetool.tokenizers.de.GermanCompoundTokenizer;
-import org.languagetool.tools.StringTools;
 
 import java.io.*;
 import java.util.*;
@@ -86,7 +85,7 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
           "Kollier|Kommunikee|Masurka|Negligee|Nessessär|Poulard|Varietee|Wandalismus|kalvinist|[Ff]ick).*");
   
   private static final int MAX_TOKEN_LENGTH = 200;
-  private static final Pattern GENDER_STAR_PATTERN = Pattern.compile("[A-ZÖÄÜ][a-zöäüß]{1,25}[*:_][a-zöäüß]{1,25}");  // z.B. "Jurist:innenausbildung"
+  private static final Pattern GENDER_STAR_PATTERN = Pattern.compile("([A-ZÖÄÜ][a-zöäüß]{1,25}|[A-ZÖÄÜ]{1,10}-[A-ZÖÄÜ][a-zöäüß]{1,25})[*:_][a-zöäüß]{1,25}");  // z.B. "Jurist:innenausbildung"
   private static final Pattern FILE_UNDERLINE_PATTERN = Pattern.compile("[a-zA-Z0-9-]{1,25}_[a-zA-Z0-9-]{1,25}\\.[a-zA-Z]{1,5}");
   private static final Pattern MENTION_UNDERLINE_PATTERN = Pattern.compile("@[a-zA-Z0-9-]{1,25}_[a-zA-Z0-9_-]{1,25}");
 
@@ -1565,8 +1564,14 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
     int pos = 0;
     while (genderPattern.find(pos)) {
       if (!isMisspelled(genderPattern.group().replaceFirst("[*:_]", ""))) {  // "_" is not tokenized anyway, so no need to handle it here
-        // e.g. "Jurist:innenausbildung" with the ":" removed should be accepted:
-        filteredMatches = filteredMatches.stream().filter(k -> !(genderPattern.start() < k.getFromPos() && genderPattern.end() == k.getToPos())).collect(Collectors.toList());
+        filteredMatches = filteredMatches.stream()
+          // e.g. "Jurist:innenausbildung" with the ":" removed should be accepted:
+          //              ^^^^^^^^^^^^^^^
+          .filter(k -> !(genderPattern.start() < k.getFromPos() && genderPattern.end() == k.getToPos()))
+          // e.g. "Testexpert*innen" with the "*" removed should be accepted:
+          //       ^^^^^^^^^^
+          .filter(k -> !(genderPattern.start() == k.getFromPos() && genderPattern.end() > k.getToPos()))
+          .collect(Collectors.toList());
       }
       pos = genderPattern.end();
     }
@@ -2127,16 +2132,24 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
     // Example: Müdigkeitsanzeichen = Müdigkeit + s + Anzeichen
     // Deals with two-part compounds only and could be extended.
     List<String> parts = splitter.splitWord(word.replaceFirst("\\.$", ""));
+    String part1 = null;
+    String part2 = null;
     if (parts.size() == 2) {
-      String part1 = parts.get(0);
-      String part2 = parts.get(1);
+      part1 = parts.get(0);
+      part2 = parts.get(1);
+    } else if (parts.size() == 3 && parts.get(1).equals("s") && word.contains("-") && startsWithUppercase(parts.get(2))) {
+      // e.g. "Prioritäts-Dings" gets split like "Priorität", "s", "dings" -> treat it as if there was no "-":
+      part1 = parts.get(0) + "s";
+      part2 = lowercaseFirstChar(parts.get(2));
+    }
+    if (part1 != null && part2 != null) {
       if (startsWithLowercase(part2)) {
         String part2uc = uppercaseFirstChar(part2);
         if (part1.matches(".*(heit|keit|ion|ität|schaft|ung|tät)s") && isNoun(part2uc)) {
           String part1noInfix = part1.substring(0, part1.length()-1);
           // don't assume very short parts (like "Ei") are correct, these can easily be typos:
-          if (part1noInfix.length() <= 3 || part2uc.length() <= 3 || part1noInfix.matches("Action|Jung") ||
-              part1.endsWith("schwungs") || isMisspelled(part1noInfix) || isMisspelled(part2uc)) {
+          if (part1noInfix.length() <= 3 || part2uc.length() <= 3 || part1noInfix.matches("Action|Jung|Wahrung") ||
+              part1.endsWith("schwungs") || part1.endsWith("sprungs") || isMisspelled(part1noInfix) || isMisspelled(part2uc)) {
             return false;
           }
           return true;
@@ -2582,7 +2595,7 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
   private String getWordAfterEnumerationOrNull(List<String> words, int idx) {
     for (int i = idx; i < words.size(); i++) {
       String word = words.get(i);
-      if (!(word.endsWith("-") || StringUtils.equalsAny(word, ",", "und", "oder", "sowie") || word.trim().isEmpty())) {
+      if (!(word.endsWith("-") || StringUtils.equalsAny(word, ",", "/", "&", "und", "oder", "bzw.", "beziehungsweise", "sowie") || word.trim().isEmpty())) {
         return word;
       }
     }
@@ -2765,6 +2778,7 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
       case "Müßt": return topMatch("Müsst");
       case "heisst": return topMatch("heißt");
       case "Heisst": return topMatch("Heißt");
+      case "heisse": return topMatch("heiße");
       case "heissen": return topMatch("heißen");
       case "beisst": return topMatch("beißt");
       case "beissen": return topMatch("beißen");
@@ -3537,6 +3551,11 @@ public class GermanSpellerRule extends CompoundAwareHunspellRule {
       case "Brics-Staaten": return topMatch("BRICS-Staaten");
       case "Rene": return topMatch("René");
       case "Renes": return topMatch("Renés");
+      case "einigermassen": return topMatch("einigermaßen");
+      case "Eurocup": return topMatch("EuroCup");
+      case "Eurocups": return topMatch("EuroCups");
+      case "etc": return topMatch("etc.");
+      case "Vermögensteuer": return topMatch("Vermögenssteuer");
     }
     return Collections.emptyList();
   }

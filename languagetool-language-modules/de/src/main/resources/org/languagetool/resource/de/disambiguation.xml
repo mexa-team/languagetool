@@ -5211,7 +5211,7 @@ Copyright © 2013 Markus Brenneis, Daniel Naber, Jan Schreiber
         </rule>
         <rule>
             <pattern case_sensitive="yes">
-                <token regexp="yes">Atlantic|Accepted|Academic|Advanced|Automatic|Automated|Air|Ambient|Authori[sz]ed|Astronomical|Botanical|British|Certified|Decentralized|Electrical|Environmental|Electrified|Financial|United|Active|Electronic|Economic|Scientific|Electric|Federal|Dynamic|Black|White|Blue|Green|Big|Little|World|Travel|Director|Social|My|Deep|Dead|Dark|European|American|Australian|English|Asian|Austrian|Swiss|German|Central|Medical|Custom|Consumer|Energy|Dragon|Child|Technology|Intelligence|Conference|Communication|Freedom|Magic|Direct|Autonomous|Californian?|Climate|Managed|Sponsored|Independent|Success|Technical|Extended|Educational|Deluxe|Public|Safety|Ultimate|Local|Heavy|Diamond|Capital|Industrial|Biomedical|Confidential|Logistic|Critical|Organic|Incorporated|Next|Low|Sunny|Bulk|Virtual|Comfort|Working|Cognitive|Conversational|Convolutional|Speciali[sz]ed|Silent|Physical|Secure|Historical|Hidden|Approved|Diagnostic</token>
+                <token regexp="yes">Atlantic|Accepted|Academic|Advanced|Automatic|Automated|Air|Ambient|Authori[sz]ed|Astronomical|Botanical|British|Certified|Decentralized|Electrical|Environmental|Electrified|Financial|United|Active|Electronic|Economic|Scientific|Electric|Federal|Dynamic|Black|White|Blue|Green|Big|Little|World|Travel|Director|Social|My|Deep|Dead|Dark|European|American|Australian|English|Asian|Austrian|Swiss|German|Central|Medical|Custom|Consumer|Energy|Dragon|Child|Technology|Intelligence|Conference|Communication|Freedom|Magic|Direct|Autonomous|Californian?|Climate|Managed|Sponsored|Independent|Success|Technical|Extended|Educational|Deluxe|Public|Safety|Ultimate|Local|Heavy|Diamond|Capital|Industrial|Biomedical|Confidential|Logistic|Critical|Organic|Incorporated|Next|Low|Sunny|Bulk|Virtual|Comfort|Working|Cognitive|Conversational|Convolutional|Speciali[sz]ed|Silent|Physical|Secure|Historical|Hidden|Approved|Diagnostic|Pragmatic</token>
                 <token postag="UNKNOWN|SUB:.+" postag_regexp="yes" regexp="yes" min="0">[A-Z][a-z]+|[A-Z]+</token>
                 <token postag="UNKNOWN|SUB:.+" postag_regexp="yes" regexp="yes">[A-Z][a-z]+|[A-Z]+</token>
             </pattern>
@@ -5219,7 +5219,7 @@ Copyright © 2013 Markus Brenneis, Daniel Naber, Jan Schreiber
         </rule>
         <rule>
             <pattern case_sensitive="yes">
-                <token regexp="yes">Atlantic|Accepted|Academic|Advanced|Automatic|Automated|Air|Ambient|Authori[sz]ed|Astronomical|Botanical|British|Certified|Decentralized|Electrical|Environmental|Electrified|Financial|United|Active|Electronic|Economic|Scientific|Electric|Federal|Dynamic|Black|White|Blue|Green|Big|Little|World|Travel|Director|Social|My|Deep|Dead|Dark|European|American|Australian|English|Asian|Austrian|Swiss|German|Central|Medical|Custom|Consumer|Energy|Dragon|Child|Technology|Intelligence|Conference|Communication|Freedom|Magic|Direct|Autonomous|Californian?|Climate|Managed|Sponsored|Independent|Success|Technical|Extended|Educational|Deluxe|Public|Safety|Ultimate|Local|Heavy|Diamond|Capital|Industrial|Biomedical|Confidential|Logistic|Critical|Organic|Incorporated|Next|Low|Sunny|Bulk|Virtual|Comfort|Working|Cognitive|Conversational|Convolutional|Speciali[sz]ed|Silent|Physical|Secure|Historical|Hidden|Approved|Diagnostic</token>
+                <token regexp="yes">Atlantic|Accepted|Academic|Advanced|Automatic|Automated|Air|Ambient|Authori[sz]ed|Astronomical|Botanical|British|Certified|Decentralized|Electrical|Environmental|Electrified|Financial|United|Active|Electronic|Economic|Scientific|Electric|Federal|Dynamic|Black|White|Blue|Green|Big|Little|World|Travel|Director|Social|My|Deep|Dead|Dark|European|American|Australian|English|Asian|Austrian|Swiss|German|Central|Medical|Custom|Consumer|Energy|Dragon|Child|Technology|Intelligence|Conference|Communication|Freedom|Magic|Direct|Autonomous|Californian?|Climate|Managed|Sponsored|Independent|Success|Technical|Extended|Educational|Deluxe|Public|Safety|Ultimate|Local|Heavy|Diamond|Capital|Industrial|Biomedical|Confidential|Logistic|Critical|Organic|Incorporated|Next|Low|Sunny|Bulk|Virtual|Comfort|Working|Cognitive|Conversational|Convolutional|Speciali[sz]ed|Silent|Physical|Secure|Historical|Hidden|Approved|Diagnostic|Pragmatic</token>
                 <token postag="UNKNOWN|SUB:.+" postag_regexp="yes" regexp="yes">[A-Z][a-z]+|[A-Z]+</token>
                 <token regexp="yes">and|or|for|of|&amp;|\/</token>
                 <token postag="UNKNOWN|SUB:.+" postag_regexp="yes" regexp="yes">[A-Z][a-z]+|[A-Z]+</token>
@@ -5683,7 +5683,7 @@ Copyright © 2013 Markus Brenneis, Daniel Naber, Jan Schreiber
         <rule><!-- lowercase word + abbreviation with no vowels -->
             <pattern case_sensitive="yes">
                 <token regexp="yes">.*[a-z].*</token>
-                <token min="0" regexp="yes">[\)\(,\/]</token>
+                <token min="0" regexp="yes">[\)\(,\/:]</token>
                 <marker>
                     <token regexp="yes">[BCDFGHJKLMNPQRSTVWXZ]{3,6}</token>
                 </marker>
@@ -5695,7 +5695,7 @@ Copyright © 2013 Markus Brenneis, Daniel Naber, Jan Schreiber
                 <marker>
                     <token regexp="yes">[BCDFGHJKLMNPQRSTVWXZ]{3,6}</token>
                 </marker>
-                <token min="0" regexp="yes">[\)\(,\/]</token>
+                <token min="0" regexp="yes">[\)\(,\/:]</token>
                 <token regexp="yes">.*[a-z].*</token>
             </pattern>
             <disambig action="ignore_spelling"/>
@@ -7402,7 +7402,7 @@ Copyright © 2013 Markus Brenneis, Daniel Naber, Jan Schreiber
                 <token postag="ADV.*" postag_regexp="yes" min="0" />
                 <marker>
                     <!-- verben, die großgeschrieben auch ein Substantiv sein könnten oder mit anderen Wörtern verwechselt werden könnten -->
-                    <token case_sensitive="yes" regexp="yes">verrat|stimm|kontrollier|betreib|mail|rat|bau|besuch|stream|knutsch|schnall|strick|ruh|futter|zwiebel|gehör|grab|cancel|ras|hinweis|beruf|nerv|zeug|buch|speck</token>
+                    <token case_sensitive="yes" regexp="yes">verrat|stimm|kontrollier|betreib|mail|rat|bau|besuch|stream|knutsch|schnall|strick|ruh|futter|zwiebel|gehör|grab|cancel|ras|hinweis|beruf|nerv|zeug|buch|speck|eck</token>
                 </marker>
             </pattern>
             <disambig action="ignore_spelling"/>
@@ -7411,7 +7411,7 @@ Copyright © 2013 Markus Brenneis, Daniel Naber, Jan Schreiber
             <pattern>
                 <marker>
                     <!-- verben, die großgeschrieben auch ein Substantiv sein könnten oder mit anderen Wörtern verwechselt werden könnten -->
-                    <token case_sensitive="yes" regexp="yes">verrat|stimm|kontrollier|betreib|mail|rat|bau|besuch|helf|stream|knutsch|schnall|strick|ruh|futter|zwiebel|gehör|grab|cancel|ras|beruf|nerv|zeug|buch|speck</token>
+                    <token case_sensitive="yes" regexp="yes">verrat|stimm|kontrollier|betreib|mail|rat|bau|besuch|helf|stream|knutsch|schnall|strick|ruh|futter|zwiebel|gehör|grab|cancel|ras|beruf|nerv|zeug|buch|speck|eck</token>
                 </marker>
                 <token>ich</token>
             </pattern>

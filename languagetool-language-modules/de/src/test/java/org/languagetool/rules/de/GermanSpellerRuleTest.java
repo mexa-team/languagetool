@@ -63,12 +63,21 @@ public class GermanSpellerRuleTest {
     assertThat(rule.ignorePotentiallyMisspelledWord("Prioritätsdings"), is(true));
     assertThat(rule.ignorePotentiallyMisspelledWord("Prioritätsdings."), is(true));
     assertThat(rule.ignorePotentiallyMisspelledWord("Haltungsschäden"), is(true));
+    assertThat(rule.ignorePotentiallyMisspelledWord("Prioritäts-Dings"), is(true));
+    assertThat(rule.ignorePotentiallyMisspelledWord("Prioritäts-Dings."), is(true));
+    assertThat(rule.ignorePotentiallyMisspelledWord("Haltungs-Schäden"), is(true));
     assertThat(rule.ignorePotentiallyMisspelledWord("haltungschäden"), is(false));  // lowercase
+    assertThat(rule.ignorePotentiallyMisspelledWord("haltungs-schäden"), is(false));  // lowercase
+    assertThat(rule.ignorePotentiallyMisspelledWord("haltungs-Schäden"), is(false));  // lowercase
     assertThat(rule.ignorePotentiallyMisspelledWord("Haltungschäden"), is(false));  // missing infix-s
+    assertThat(rule.ignorePotentiallyMisspelledWord("Haltung-Schäden"), is(false));  // missing infix-s
     assertThat(rule.ignorePotentiallyMisspelledWord("Hultungsschäden"), is(false));  // misspelling in first word
+    assertThat(rule.ignorePotentiallyMisspelledWord("Hultungs-Schäden"), is(false));  // misspelling in first word
     assertThat(rule.ignorePotentiallyMisspelledWord("Haltungsscheden"), is(false));  // misspelling in second part
+    assertThat(rule.ignorePotentiallyMisspelledWord("Haltungs-Scheden"), is(false));  // misspelling in second part
     assertThat(rule.ignorePotentiallyMisspelledWord("HaltungsSchäden"), is(false));
     assertThat(rule.ignorePotentiallyMisspelledWord("Haltungsei"), is(false));  // second part too short
+    assertThat(rule.ignorePotentiallyMisspelledWord("Haltungs-Ei"), is(false));  // second part too short
     assertThat(rule.ignorePotentiallyMisspelledWord("Leistungsnach"), is(false));  // second part not a noun
     assertThat(rule.ignorePotentiallyMisspelledWord("Leistungsgegangen"), is(false));
     assertThat(rule.ignorePotentiallyMisspelledWord("Leistungsgegangen."), is(false));
@@ -76,10 +85,11 @@ public class GermanSpellerRuleTest {
     assertThat(rule.ignorePotentiallyMisspelledWord("Leistung"), is(false));  // not a compound
     assertThat(rule.ignorePotentiallyMisspelledWord("Leistungs"), is(false));  // not a compound
     assertThat(rule.ignorePotentiallyMisspelledWord("Anschauungswiese"), is(false));  // from prohibit.txt
-    // special case:
+    // special cases:
     assertThat(rule.ignorePotentiallyMisspelledWord("Actionsspaß"), is(false));
     assertThat(rule.ignorePotentiallyMisspelledWord("Jungsnamen"), is(false));
     assertThat(rule.ignorePotentiallyMisspelledWord("Aufschwungsphase"), is(false));
+    assertThat(rule.ignorePotentiallyMisspelledWord("Absprungsrate"), is(false));
   }
 
   @Test
@@ -720,6 +730,7 @@ public class GermanSpellerRuleTest {
     assertEquals(0, rule.match(lt.getAnalyzedSentence("Ist doch - gut")).length);
     assertEquals(0, rule.match(lt.getAnalyzedSentence("Ist doch -- gut")).length);
     assertEquals(0, rule.match(lt.getAnalyzedSentence("Stil- und Grammatikprüfung gut")).length);
+    assertEquals(0, rule.match(lt.getAnalyzedSentence("Stil- bzw. Grammatikprüfung gut")).length);
     assertEquals(0, rule.match(lt.getAnalyzedSentence("Oliven- und Mandelöl")).length);
     assertEquals(0, rule.match(lt.getAnalyzedSentence("Stil-, Text- und Grammatikprüfung gut")).length);
     assertEquals(0, rule.match(lt.getAnalyzedSentence("Er liebt die Stil-, Text- und Grammatikprüfung.")).length);
@@ -1124,7 +1135,11 @@ public class GermanSpellerRuleTest {
     assertThat(rule.match(lt.getAnalyzedSentence("Die Juriest_innenausbieldung ist schwer.")).length, is(2));
     assertThat(rule.match(lt.getAnalyzedSentence("Die Juriest*innenausbieldung ist schwer.")).length, is(2));
     assertThat(rule.match(lt.getAnalyzedSentence("Die Juriest:innenausbieldung ist schwer.")).length, is(2));
-    
+
+    assertThat(rule.match(lt.getAnalyzedSentence("Die SEO-Expert*innen")).length, is(0));
+    assertThat(rule.match(lt.getAnalyzedSentence("Die SEO-Expxrt*innen")).length, is(1));
+    assertThat(rule.match(lt.getAnalyzedSentence("Die SEO-Expert*annen")).length, is(2));
+
     //check common file name with _
     assertThat(rule.match(lt.getAnalyzedSentence("Die Datei heißt Jurist_innen.txt.")).length, is(0));
     assertThat(rule.match(lt.getAnalyzedSentence("Die Datei heißt Jurist_innen.txt und ist leer.")).length, is(0));

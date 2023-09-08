@@ -6451,6 +6451,10 @@ Incorrectly touched. <example type="untouched">Incorrect grammar. Those present 
             <token postag_regexp="yes" postag="NN.*"/>
             <token postag="SENT_END"/>
         </antipattern>
+        <antipattern>
+            <token>t</token>
+            <token>he</token>
+        </antipattern>
         <antipattern><!-- Incorrect grammar: more than one tests is -->
             <token regexp="yes">more|less</token>
             <token>than</token>
@@ -6969,7 +6973,7 @@ Incorrectly touched. <example type="untouched">Incorrect grammar. Those present 
             <pattern>
                 <token postag_regexp="yes" postag="NN.*">
                     <exception regexp="yes" case_sensitive="yes">Here|WHO</exception>
-                    <exception regexp="yes">why</exception>
+                    <exception>why</exception>
                 </token>
                 <marker>
                     <token spacebefore="no">'s<exception inflected="yes">have</exception></token>
@@ -16271,7 +16275,7 @@ Incorrectly touched. <example type="untouched">Incorrect grammar. Those present 
         <rule><!-- lowercase word + abbreviation with no vowels -->
             <pattern case_sensitive="yes">
                 <token regexp="yes">.*[a-z0-9].*</token>
-                <token min="0" regexp="yes">[\)\(,\/]</token>
+                <token min="0" regexp="yes">[\)\(,\/:]</token>
                 <marker>
                     <token regexp="yes">[BCDFGHJKLMNPQRSTVWXZ]{3,6}s?</token>
                 </marker>
@@ -16283,7 +16287,7 @@ Incorrectly touched. <example type="untouched">Incorrect grammar. Those present 
                 <marker>
                     <token regexp="yes">[BCDFGHJKLMNPQRSTVWXZ]{3,6}s?</token>
                 </marker>
-                <token min="0" regexp="yes">[\)\(,\/]</token>
+                <token min="0" regexp="yes">[\)\(,\/:]</token>
                 <token regexp="yes">.*[a-z0-9].*</token>
             </pattern>
             <disambig action="ignore_spelling"/>

@@ -3418,7 +3418,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
             <example correction="vívidamente">Lo sentimos <marker>vividamente</marker>.</example>
         </rule>
         <rulegroup id="RELATIVOS_SIN_TILDE" name="relativos sin tilde (quien, donde...)">
-            <url>https://www.fundeu.es/recomendacion/alguien-a-quien-preguntar-sin-tilde-en-quien/</url>
+            <!--<url>https://www.fundeu.es/recomendacion/alguien-a-quien-preguntar-sin-tilde-en-quien/</url>-->
+            <url>https://languagetool.org/insights/es/publicacion/pronombres-relativos-definicion-ejemplos/</url>
             <rule>
                 <pattern>
                     <token regexp="yes" inflected="yes">alguien|nadie|nada|modo|manera|lugar|sitio</token>
@@ -12079,14 +12080,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
                 <example correction="más">No hay <marker>mas</marker> que decir.</example>
             </rule>
             <rule>
+                <antipattern case_sensitive="yes">
+                    <!-- Probably a person's name -->
+                    <token regexp="yes">\p{Lu}.*</token>
+                    <token>Mas</token>
+                </antipattern>
                 <pattern>
-                    <token>mas</token>
+                    <token>mas<exception postag="NP.*" postag_regexp="yes"/></token>
                 </pattern>
                 <message>Si no equivale a 'pero' o 'sino', se escribe con tilde.</message>
                 <suggestion><match no="1" regexp_match="(?iu)a" regexp_replace="á" case_conversion="preserve"/></suggestion>
                 <url>https://www.fundeu.es/recomendacion/mas-tilde-acento/</url>
                 <example correction="más">No hay <marker>mas</marker>.</example>
                 <example correction="más" type="triggers_error" reason="archaic or formal">Me gusta, <marker>mas</marker> no lo quiero.</example>
+                <example correction="Más"><marker>Mas</marker> Madrid.</example>
+                <example>Aitana Mas y Juan Antonio Mas.</example>
             </rule>
         </rulegroup>
         <rulegroup id="AUN" name="aún -> aun">
@@ -12539,6 +12547,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
                     </unify>
                     <example>Ofreciendo a Dios sacrificios, aun públicos, para aplacar su justicia.</example>
                 </antipattern>
+                <antipattern>
+                    <token skip="50" postag="V.IC.*" postag_regexp="yes"/>
+                    <token>aun</token>
+                    <token>sin</token>
+                    <example>Podrían hacerlo aun sin ayuda.</example>
+                </antipattern>
                 <pattern>
                     <token>aun</token>
                 </pattern>
@@ -12882,11 +12896,25 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
                 <token>:</token>
                 <example>Si le digo:</example>
             </antipattern>
+            <antipattern>
+                <token>si</token>
+                <token regexp="yes">te|le|nos|os|les</token>
+                <token inflected="yes">parecer</token>
+                <token regexp="yes">bien|mal</token>
+                <example>Si te parece bien.</example>
+            </antipattern>
             <rule>
                 <antipattern>
                     <token skip="-1">si</token>
                     <token>,</token>
-                    <token regexp="yes">sí|no<exception scope="previous">que</exception></token>
+                    <token>por<exception scope="previous">que</exception></token>
+                    <token>supuesto</token>
+                    <example>Si está en otra posición, por supuesto.</example>
+                </antipattern>
+                <antipattern>
+                    <token skip="-1">si</token>
+                    <token>,</token>
+                    <token regexp="yes">sí|no|claro<exception scope="previous">que</exception></token>
                     <example>Si está en otra posición, sí, lógicamente.</example>
                     <example>Si está en otra posición, no, por supuesto.</example>
                 </antipattern>
@@ -15122,6 +15150,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
                 <suggestion>bien<match no="2"/></suggestion>
                 <example correction="Bienvenidos">¡<marker>Bien venidos</marker> a la fiesta!</example>
             </rule>
+            <rule id="INDOCHINA" name="Indoxhina">
+                <pattern>
+                    <token case_sensitive="yes">Indo</token>
+                    <token min="0">-</token>
+                    <token>china</token>
+                </pattern>
+                <message>Se escribe junto.</message>
+                <suggestion>Indochina</suggestion>
+                <example correction="Indochina">La guerra de <marker>Indo-China</marker>.</example>
+            </rule>
         </rulegroup>
         <rule id="TIK_TOK" name="TikTok">
             <pattern>
@@ -16445,6 +16483,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
         </rule>
     </category>
     <category id="GRAMMAR" name="Gramática" type="grammar">
+        <rule id="LAS_PASO" name="las PASOS > las PASO" premium="no">
+            <pattern>
+                <token>las</token>
+                <marker>
+                    <token case_sensitive="yes">PASOS</token>
+                </marker>
+            </pattern>
+            <message>La sigla 'PASO' debe permanecer en singular.</message>
+            <suggestion><match no="2" regexp_match="(?iu)PASOS" regexp_replace="PASO" case_conversion="preserve"/></suggestion>
+            <url>https://www.fundeu.es/recomendacion/las-pasos-paso-primarias-argentina/</url>
+            <example correction="PASO">El precandidato cerró su gira nacional antes de las <marker>PASOS</marker>.</example>
+        </rule>
         <rule id="MALO_AMIGO_MAL_AMIGO" name="«malo» y «bueno» se apocopan delante de sustantivos masculinos en singular">
             <antipattern>
                 <!--1-->
@@ -25255,7 +25305,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
         </rulegroup>
         <rulegroup id="MONOSILABOS" name="los monosílabos no llevan tilde">
             <!-- the speller gives already good suggestions, but we provide +info -->
-            <url>http://aplica.rae.es/orweb/cgi-bin/v.cgi?i=fGOCbZgElkdRTUPr</url>
+            <!--<url>http://aplica.rae.es/orweb/cgi-bin/v.cgi?i=fGOCbZgElkdRTUPr</url>-->
+            <url>https://languagetool.org/insights/es/publicacion/fue-con-tilde-o-sin-tilde/</url>
             <rule>
                 <pattern>
                     <token regexp="yes">dió|guió|lió|fió|frió|pió|rió|guión|ión|muón|vió|pión|prión|crió</token>
@@ -25264,6 +25315,22 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
                 <suggestion><match no="1" regexp_match="(?iu)(.*)ó(.*)" regexp_replace="$1o$2" case_conversion="preserve"/></suggestion>
                 <example correction="dio">Me lo <marker>dió</marker> él.</example>
                 <example correction="guion">El <marker>guión</marker>.</example>
+            </rule>
+            <rule>
+                <pattern>
+                    <token>fué</token>
+                </pattern>
+                <message>Según las normas ortográficas actuales, los monosílabos no llevan tilde.</message>
+                <suggestion><match no="1" regexp_match="(?iu)(.*)é(.*)" regexp_replace="$1e$2" case_conversion="preserve"/></suggestion>
+                <example correction="fue">Se <marker>fué</marker> enseguida.</example>
+            </rule>
+            <rule>
+                <pattern>
+                    <token regexp="yes">fuí|ví|tí|dí</token>
+                </pattern>
+                <message>Según las normas ortográficas actuales, los monosílabos no llevan tilde.</message>
+                <suggestion><match no="1" regexp_match="(?iu)(.*)í(.*)" regexp_replace="$1i$2" case_conversion="preserve"/></suggestion>
+                <example correction="fui">Me <marker>fuí</marker> enseguida.</example>
             </rule>
         </rulegroup>
         <rule id="SOLO" name="sólo/solo">
@@ -32481,6 +32548,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
                 <!-- Prefixes: used in texts about linguistics -->
                 <token regexp="yes">a|an|ante|anti|archi|bi|co|com|con|contra|cuasi|des|entre|ex|extra|hiper|hipo|im|in|infra|inter|multi|nano|pluri|poli|pre|pro|re|retro|semi|sobre|sub|super|supra|tele|trans|tras|tri|ultra|uni|vice</token>
                 <token spacebefore="no">-</token>
+            </antipattern>
+            <antipattern>
+                <token>-</token>
+                <token>-</token>
+                <token>-</token>
             </antipattern>
             <rule>
                 <pattern>

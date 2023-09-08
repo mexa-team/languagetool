@@ -7021,3 +7021,39 @@ Plainsboro Township	NNP
 Jennifer Love Hewitt	NNP
 Siemens Mobility	NNP
 Assa Abloy	NNP
+Hugo Ekitiké	NNP
+Marco Asensio	NNP
+Gonçalo Ramos	NNP
+Luka Jović	NNP
+Peter Dodds	NNP
+Oak Brook	NNP
+Cornel West	NNP
+Black Rock City	NNP
+Reno Gazette Journal	NNP
+Reno Gazette	NNP
+Lars Mapstead	NNP
+Levski Sofia	NNP
+James A. Garfield	NNP
+Ulysses S. Grant	NNP
+St. Croix County	NNP
+Reader's Digest	NNP
+Reader’s Digest	NNP
+Hector Barbossa	NNP
+Penguin Random House	NNP
+Coco Gauff	NNP
+Hauck Aufhäuser Lampe	NNP
+Linda Evangelista	NNP
+Star Bharat	NNP
+STAR Bharat	NNP
+Wood Mackenzie	NNP
+Saudi Telecom	NNP
+Fiat Scudo	NNP
+Citroën Jumpy	NNP
+Citroën C3	NNP
+Citroën C4	NNP
+NextEra Energy	NNP
+Becton Dickinson	NNP
+Alex Gerko	NNP
+Froot Loop	NNP
+Froot Loops	NNP
+Pearl S. Buck	NNP
