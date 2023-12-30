@@ -58,6 +58,14 @@ public class MorfologikAmericanSpellerRuleTest extends AbstractEnglishSpellerRul
   }
 
   @Test
+  public void testSuggestionForMisspelledHyphenatedWords() throws IOException {
+    // one word in compound misspelled:
+    assertSuggestion("one-diminensional", "one-dimensional");
+    //assertSuggestion("web-bassed", "web-based");
+    assertSuggestion("parple-people-eater", "purple-people-eater");
+  }
+
+  @Test
   public void testNamedEntityIgnore() throws IOException {
     Language language = Languages.getLanguageForShortCode("en-US");
     Map<String, Integer> map = new HashMap<>();
@@ -358,23 +366,6 @@ public class MorfologikAmericanSpellerRuleTest extends AbstractEnglishSpellerRul
     assertFalse(rule.isMisspelled("bicycle"));
     assertFalse(rule.isMisspelled("table"));
     assertFalse(rule.isMisspelled("tables"));
-  }
-
-  @Test
-  @Ignore
-  public void testInteractiveMultilingualSignatureCase() throws IOException {
-    String sig = "-- " +
-            "Department of Electrical and Electronic Engineering\n" +
-            "Office XY, Sackville Street Building, The University of Manchester, Manchester\n";
-    List<AnalyzedSentence> analyzedSentences = lt.analyzeText("Hallo Herr Müller, wie geht\n\n" + sig);
-    for (AnalyzedSentence analyzedSentence : analyzedSentences) {
-      RuleMatch[] matches = rule.match(analyzedSentence);
-      System.out.println("===================");
-      System.out.println("S:" + analyzedSentence.getText());
-      for (RuleMatch match : matches) {
-        System.out.println("  getErrorLimitLang: " + match.getErrorLimitLang());
-      }
-    }
   }
 
   @Test

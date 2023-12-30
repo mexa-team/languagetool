@@ -536,6 +536,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
 
       <rule>
         <pattern>
+          <marker>
+            <token>в</token>
+          </marker>
+          <token regexp="yes">XX[IV]*([-—–][XIV]+)*</token>
+        </pattern>
+        <message>Перед словами, що починаються на в, ф або збігом приголосних із в, ф пишемо у: <suggestion>у</suggestion> \2</message>
+        <url>https://r2u.org.ua/pravopys/pravXXI/11.html</url>
+        <example correction="у">А <marker>в</marker> XX столітті.</example>
+        <example correction="у">А <marker>в</marker> XX-XXI століттях.</example>
+      </rule>
+
+      <rule>
+        <pattern>
           <or>
             <token regexp="yes">.*[бвгґджзклмнпрстфхцчшщ]|[,;:—–-]</token>
             <token postag="SENT_START"/>
@@ -2336,7 +2349,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
         <marker>
           <token inflected="yes">хресний</token>
         </marker>
-        <token regexp="yes" inflected="yes">батько|мати</token>
+        <token regexp="yes" inflected="yes">батько|мати|дитина</token>
       </pattern>
       <message>Правильно: <suggestion><match no="1" regexp_match="(?ui)хресн(.+)" regexp_replace="хрещен$1"/></suggestion></message>
       <example correction="хрещена">його <marker>хресна</marker> мати.</example>
@@ -2624,14 +2637,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
         <pattern>
           <marker>
             <token regexp="yes" inflected="yes">підняти|підійняти|підіймати|підійма(ючи|вши)|піднімавши</token>
+            <token min="0" regexp="yes">би?</token>
             <token postag_regexp="yes" postag="(adj|numr):.:v_zna.*" min="0" max="2"/>
             <token inflected="yes" postag_regexp="yes" postag="noun:inanim:.:v_zna.*">питання</token>
           </marker>
         </pattern>
-        <message>Краще: <suggestion>порушувати \2 \3</suggestion></message>
-        <suggestion>підносити \2 \3</suggestion>
+        <message>Краще: <suggestion>порушувати \2 \3 \4</suggestion></message>
+        <suggestion>підносити \2 \3 \4</suggestion>
         <example correction="порушувати це питання|підносити це питання">він <marker>підняв це питання</marker> одразу.</example>
       </rule>
+
       <rule>
         <pattern>
           <marker>
@@ -2643,6 +2658,22 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
         <message>Краще: <suggestion>порушення \2 \3</suggestion></message>
         <suggestion>піднесення \2 \3</suggestion>
         <example correction="порушення цього питання|піднесення цього питання">і <marker>підняття цього питання</marker>...</example>
+      </rule>
+
+      <rule>
+        <pattern>
+          <marker>
+            <unify>
+              <feature id="gender"/>
+              <feature id="case"/>
+              <token inflected="yes">піднятий</token>
+              <token inflected="yes">питання</token>
+            </unify>
+          </marker>
+        </pattern>
+        <message>Краще: <suggestion><match no="1" postag_regexp="yes" postag="adj:.*">порушений</match> \2</suggestion></message>
+        <suggestion><match no="1" postag_regexp="yes" postag="adj:.*" postag_replace="$0.*">піднесений</match> \2</suggestion>
+        <example correction="порушене питання|піднесене питання">і <marker>підняте питання</marker>...</example>
       </rule>
     </rulegroup>
 
@@ -3738,6 +3769,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
       <example correction="наводити гарний приклад"><marker>приведіть гарний приклад</marker></example>
     </rule>
 
+    <rule id="na_dnyah_vs_dnyamy" name="На днях і днями">
+      <pattern>
+        <token>на</token>
+        <token>днях</token>
+      </pattern>
+      <message>Краще: <suggestion>днями</suggestion></message>
+      <suggestion>цими днями</suggestion>
+      <example correction="днями|цими днями"><marker>на днях</marker> бачив знайомого</example>
+    </rule>
+
     <rule id="poklanyatysia" name="Покланятися і поклонятися">
       <pattern>
         <token inflected="yes">покланятися</token>
@@ -4063,6 +4104,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
         </pattern>
         <message>Коли йдеться про «у внутрішній частині» правильно: <suggestion>всередині</suggestion></message>
         <example correction="всередині">і <marker>у середині</marker> цього суспільства</example>
+      </rule>
+    </rulegroup>
+
+    <rulegroup id="distavaty_vs_nabovaty" name="Діставати і Набувати">
+      <rule>
+        <pattern>
+          <marker>
+            <token inflected="yes" regexp="yes">дістати|діставати</token>
+          </marker>
+          <token regexp="yes" min="0">би?</token>
+          <token postag_regexp="yes" postag="adj:m:.*" min="0"/>
+          <token>розголосу</token>
+        </pattern>
+        <message>Краще: <suggestion><match no="1" postag_regexp="yes" postag="(verb.*)" postag_replace="$1">набути</match></suggestion></message>
+        <suggestion><match no="1" postag_regexp="yes" postag="(verb.*)" postag_replace="$1">набувати</match></suggestion>
+        <example correction="набула|(набувати)">версія про отруєння Моцарта <marker>дістала</marker> розголосу.</example>
+        <example correction="(набути)|набувала">версія про отруєння Моцарта <marker>діставала</marker> розголосу.</example>
       </rule>
     </rulegroup>
 

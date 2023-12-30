@@ -225,6 +225,22 @@ USA
             </rule>
         </rulegroup>-->
 
+        <rule id="MFG" name="'MfG (Mit freundlichen Grüßen)' (abgekürzte Schlussformeln)">
+            <pattern case_sensitive="yes">
+                <token postag="SENT_START"/>
+                <marker>
+                    <token regexp="yes">mfg|MfG</token>
+                </marker>
+            </pattern>
+            <message>Das Abkürzen von Schlussformeln kann als unhöflich empfunden werden.</message>
+            <suggestion>Mit freundlichen Grüßen</suggestion>
+            <suggestion>Mit freundlichem Gruß</suggestion>
+            <short>Schlussformeln sollten nicht abgekürzt werden</short>
+            <example><marker>OMFG</marker> LOL!</example>
+            <example><marker>MFG</marker> ist die Medien- und Filmgesellschaft Baden-Württemberg.</example>
+            <example correction="Mit freundlichen Grüßen|Mit freundlichem Gruß"><marker>MfG</marker></example>
+        </rule>
+
         <rulegroup id="H2O" name="H2O (H₂O) etc." tone_tags="general">
             <rule><!--O2 [1]-->
                 <antipattern>
@@ -776,7 +792,6 @@ USA
                 <token regexp="yes" case_sensitive="yes">(Sieben|7)-Tages-(Inzidenz(en)?|Trends?|Wochen?)</token>
             </pattern>
             <message>Die gängigere Schreibweise ist <suggestion><match no="1" regexp_match="Tages" regexp_replace="Tage" /></suggestion>.</message>
-            <url>https://languagetool.org/insights/de/beitrag/bindestrich-corona/#der-bindestrich-dient-zur-besseren-lesbarkeit-%E2%80%93-auch-bei-coronabegriffen</url>
             <example correction="7-Tage-Inzidenz">Die <marker>7-Tages-Inzidenz</marker> ist stark gesunken.</example>
         </rule>
         <rulegroup id="MEHR_ALS_ZAL_PLUS" name="mehr als 10+ (10)" tone_tags="clarity">
@@ -936,6 +951,55 @@ USA
     <!-- Umgangssprache -->
     <!-- ====================================================================== -->
     <category id="COLLOQUIALISMS" name="Umgangssprache" type="style">
+
+        <rule id="I_BIMS_JUGENDSPRACHE" name="Hallo, I bims (ich bin's)">
+            <antipattern>
+                <token>I</token>
+                <token skip="-1">bims</token>
+                <token>ich</token>
+                <token>bins</token>
+                <example>"I bims" heißt soviel wie "ich bins".</example>
+            </antipattern>
+            <antipattern>
+                <token>I</token>
+                <token skip="-1">bims</token>
+                <token>ich</token>
+                <token>bin</token>
+                <token>'</token>
+                <token>s</token>
+                <example>"I bims" heißt soviel wie "ich bin's".</example>
+            </antipattern>
+            <antipattern>
+                <token>ich</token>
+                <token skip="-1">bins</token>
+                <token>I</token>
+                <token>bims</token>
+                <example>"Ich bins" heißt neuerdings "I bims".</example>
+            </antipattern>
+            <antipattern>
+                <token>ich</token>
+                <token>bin</token>
+                <token>'</token>
+                <token skip="-1">s</token>
+                <token>I</token>
+                <token>bims</token>
+                <example>"Ich bin's" heißt neuerdings "I bims".</example>
+            </antipattern>
+            <antipattern>
+                <token regexp="yes">„|"|'</token>
+                <token>I</token>
+                <token>bims</token>
+                <token regexp="yes">“|"|'</token>
+                <example>"I bims" heißt soviel wie "ich bins".</example>
+            </antipattern>
+            <pattern>
+                <token>I</token>
+                <token>bims</token>
+            </pattern>
+            <message>„I bims“ war das Jugendwort des Jahres 2017. Es handelt sich dabei um eine absichtlich falsch geschriebene Form von <suggestion><match no="1" case_conversion="alllower">ich</match> bin's</suggestion>.</message>
+            <example correction="ich bin's">Hallo, <marker>I bims</marker>.</example>
+        </rule>
+
         <rulegroup id="N_NETTER_TYP" name="n (ein) netter Typ" tone_tags="formal professional objective academic">
             <antipattern>
                 <token regexp="yes" skip="1">.*Buchstaben?</token>
@@ -1051,7 +1115,7 @@ USA
                         </token>
                     </marker>
                 </pattern>
-                <message>Standardsprachlich ist die Verbform mit 'e' eleganter. Falls Sie umgangssprachlich formulieren und das 'e' auslassen möchten, setzen Sie einen Apostroph.</message>
+                <message>Standardsprachlich ist die Verbform mit 'e' eleganter. Zur besseren Lesbarkeit können Sie alternativ einen Apostroph setzen.</message>
                 <suggestion>\2e</suggestion>
                 <suggestion>\2’</suggestion>
                 <example correction="kaufe|kauf’">Ich <marker>kauf</marker> jeden Samstag frische Lebensmittel.</example>
@@ -1091,7 +1155,7 @@ USA
                     </marker>
                     <token>ich</token>
                 </pattern>
-                <message>Standardsprachlich ist die Verbform mit 'e' eleganter. Falls Sie umgangssprachlich formulieren und das 'e' auslassen möchten, setzen Sie einen Apostroph.</message>
+                <message>Standardsprachlich ist die Verbform mit 'e' eleganter. Zur besseren Lesbarkeit können Sie alternativ einen Apostroph setzen.</message>
                 <suggestion>\1e</suggestion>
                 <suggestion>\1’</suggestion>
                 <example correction="kaufe|kauf’">Normalerweise <marker>kauf</marker> ich jeden Samstag frische Lebensmittel.</example>
@@ -1467,10 +1531,14 @@ USA
                 <token>für</token>
                 <token>umsonst</token>
             </pattern>
-            <message>Die Wendung 'für umsonst' ist umgangssprachlich. Möchten Sie die Präposition löschen?</message>
+            <message>Die Wendung 'für umsonst' ist umgangssprachlich. Möchten Sie die Präposition löschen oder eine Alternative verwenden?</message>
             <suggestion>umsonst</suggestion>
+            <suggestion>kostenlos</suggestion>
+            <suggestion>kostenfrei</suggestion>
+            <suggestion>vergeblich</suggestion>
             <example>LanguageTool gibt es <marker>umsonst</marker>, aber nicht vergebens.</example>
-            <example correction="umsonst">LanguageTool gibt es <marker>für umsonst</marker>, aber nicht vergebens.</example>
+            <example correction="umsonst|kostenlos|kostenfrei|vergeblich">LanguageTool gibt es <marker>für umsonst</marker>, aber nicht vergebens.</example>
+            <example correction="umsonst|kostenlos|kostenfrei|vergeblich">Meine jahrelange Anstrengung war <marker>für umsonst</marker>.</example>
         </rule>
         <rule id="SATZ_VON" name="'Satz von (des) Pythagoras etc.'" tone_tags="formal">
             <!-- vgl. http://www.duden.de/rechtschreibung/von_aus_ab_durch_per_seitens#Bedeutung5c -->
@@ -2783,6 +2851,14 @@ USA
             </rule>
             <rule>
                 <antipattern>
+                    <token inflected="yes">sein</token>
+                    <token min="0" postag="ADV:MOD"/>
+                    <token>rum</token>
+                    <token>wie</token>
+                    <token>num</token>
+                    <example>Das ist total rum wie num.</example>
+                </antipattern>
+                <antipattern>
                     <token>[</token>
                     <token>rum</token>
                     <token>]</token>
@@ -2973,11 +3049,14 @@ USA
                 <pattern>
                     <token>rein-</token>
                     <token skip="-1">und</token>
-                    <token postag="SUB.*INF|VER.*" postag_regexp="yes" regexp="yes">raus.*</token>
+                    <token postag="SUB.*INF|VER.*" postag_regexp="yes" regexp="yes">raus.*
+                        <exception regexp="yes">rausschlüpfen|rauslaufen</exception>
+                    </token>
                 </pattern>
                 <message>'\1 \2 \3' ist umgangssprachlich.</message>
                 <suggestion>ein- <match no="2" include_skipped="all"/> <match no="3" regexp_match="^[Rr]aus" regexp_replace="aus"/></suggestion>
                 <example correction="ein- und erst dann ausstecken">Laden Sie vor dem ersten Gebrauch Ihr Gerät, indem Sie das Netzteil in die Steckdose <marker>rein- und erst dann rausstecken</marker>, wenn das grüne Licht leuchtet.</example>
+                <example>Man kann einfach bequem rein- und rausschlüpfen.</example><!-- wrong suggestion-->
             </rule>
 	        <rule default="temp_off"><!-- RAN_RUM_RAUF_REIN_RAUS_RUNTER[12] -->
                 <pattern>
@@ -3819,12 +3898,20 @@ USA
                 <token skip="-1" regexp="yes">da|hier|dort|Schwamm|drunter|drauf|oben</token>
                 <token>drüber</token>
             </antipattern>
+            <antipattern>
+                <token>drüber</token>
+                <token regexp="yes" inflected="yes">lesen|schauen</token>
+            </antipattern>
+            <antipattern>
+                <token regexp="yes" inflected="yes" skip="-1">lesen|schauen</token>
+                <token>drüber</token>
+            </antipattern>
             <pattern>
                 <token>drüber</token>
             </pattern>
             <message>Möchten Sie ein weniger umgangssprachliches Wort verwenden, um Ihren Schreibstil zu verbessern?</message>
             <suggestion>darüber</suggestion>
-            <example correction="darüber">Ich schaue später mal <marker>drüber</marker>.</example>
+            <example correction="darüber">Ich springe später mal <marker>drüber</marker>.</example>
             <example>Ich schaue da später mal drüber.</example>
         </rule>
         <rule id="DRUNTER" name="drunter (darunter)" tone_tags="formal">
@@ -4075,6 +4162,12 @@ USA
         </rule>
         <rulegroup id="PRP_WAS_WO" name="Standardsprache: 'woran' statt 'an was'" tone_tags="formal">
             <rule><!--1-->
+                <antipattern>
+                    <token>ab</token>
+                    <token>und</token>
+                    <token>an</token>
+                    <example>Unterwegs gibt es ab und an was zu diskutieren.</example>
+                </antipattern>
                 <antipattern>
                     <token regexp="yes">,|und|aber</token>
                     <token case_sensitive="yes">um</token>
@@ -5981,7 +6074,7 @@ USA
             <antipattern><!-- do not correct "Phantasialand" or "chromatography" -->
                 <token regexp="yes">.*y|Phantasia.*|Graphem[se]?</token>
             </antipattern>
-            <rule>
+            <rule><!--1-->
                 <pattern>
                     <token regexp="yes" case_sensitive="yes">Phantas.*</token>
                 </pattern>
@@ -5990,7 +6083,7 @@ USA
                 <example correction="Fantasie">Er hat eine blühende <marker>Phantasie</marker>.</example>
                 <example correction="Fantasien">Er entwickelte wilde <marker>Phantasien</marker>.</example>
             </rule>
-            <rule>
+            <rule><!--2-->
                 <pattern>
                     <token regexp="yes" case_sensitive="yes">phantas.*</token>
                 </pattern>
@@ -5999,12 +6092,14 @@ USA
                 <example correction="fantastische">Es ist eine <marker>phantastische</marker> Landschaft.</example>
                 <example correction="fantasievolle">Er lieferte eine <marker>phantasievolle</marker> Beschreibung.</example>
             </rule>
-            <rule>
+            <rule><!--3-->
                 <antipattern>
                     <token regexp="yes">GraphQL|.*pho[nt]ograph.*|monograph|palaeontograph.*|graphe(mi(sch|k)|mati(sch|k)|ologi(sch|e)).*|Graph(e[nm]|ic(s|al))?</token>
                 </antipattern>
                 <pattern>
-                    <token regexp="yes" case_sensitive="yes">[\wäöüÄÖÜß-]*[gG]raph[\wäöüÄÖÜß-]*</token>
+                    <token regexp="yes" case_sensitive="yes">[\wäöüÄÖÜß-]*[gG]raph[\wäöüÄÖÜß-]*
+                        <exception regexp="yes">.*[Pp]h.*ph.*</exception>
+                    </token>
                 </pattern>
                 <message>Möchten Sie die modernere Schreibweise <suggestion><match no="1" regexp_match="(.)(.*)raph(.*)" regexp_replace="$1$2raf$3"/></suggestion> verwenden?</message>
                 <url>https://languagetool.org/insights/de/beitrag/ph-versus-f/</url>
@@ -6018,8 +6113,9 @@ USA
                 <example>Der "Telegraph" zitierte eine nicht näher genannte Regierungsquelle mit den Worten: "Alles steht auf Messers Schneide."</example>
                 <example>Sein Buch heißt 'everyday  chromatography'.</example>
                 <example>Wir fahren ins Phantasialand.</example>
+                <example>Er entwickelte den Phonautograph.</example><!-- exception because only 1 'ph' gets corrected-->
             </rule>
-            <rule>
+            <rule><!--4-->
                 <antipattern>
                     <token regexp="yes">GraphQL|.*pho[nt]ograph.*|graphe(mi(sch|k)|mati(sch|k)|ologi(sch|e)).*|Graph(e[nm]|ic(s|al))?</token>
                 </antipattern>
@@ -6037,7 +6133,7 @@ USA
                 <example>http://www.GRAPHICAL-ILLUSTRATION.com</example>
                 <example>Als kaiserlicher Archivar hatte der Biograph Zugriff auf Dokumente der Regierung.</example>
             </rule>
-            <rule>
+            <rule><!--5-->
                 <pattern>
                     <token regexp="yes" case_sensitive="yes">Photograph[\wäöüÄÖÜß-]*</token>
                 </pattern>
@@ -6045,7 +6141,7 @@ USA
                 <url>https://languagetool.org/insights/de/beitrag/ph-versus-f/</url>
                 <example correction="Fotografien">Sie sammelte <marker>Photographien</marker>.</example>
             </rule>
-            <rule>
+            <rule><!--6-->
                 <pattern>
                     <token regexp="yes" case_sensitive="yes">[\wäöüÄÖÜß-]*photograph[\wäöüÄÖÜß-]*</token>
                 </pattern>
@@ -6054,21 +6150,23 @@ USA
                 <example correction="Familienfotografien">Ihr gelangen immer wieder wundervolle <marker>Familienphotographien</marker>.</example>
             </rule>
         </rulegroup>
-        <rulegroup id="TEST_F_ANSTATT_PH" name="Worte mit Ph anstatt F" tone_tags="formal">
+        <rulegroup id="F_ANSTATT_PH_2" name="Worte mit Ph anstatt F" tone_tags="formal" default="off"><!--we have other/better rules and gGEC for these cases-->
             <url>https://languagetool.org/insights/de/beitrag/ph-versus-f/</url>
-            <rule>
+            <rule><!--1-->
                 <antipattern>
-                    <token regexp="yes">Phone|Photograph.*|Photons?|Photonen.*|Photoshop.*|Phono.*|Phone[mt].*</token>
+                    <token regexp="yes">Photograph.*|Photons?|Photonen.*|Photoshop.*</token>
                 </antipattern>
                 <pattern>
-                    <token regexp="yes" case_sensitive="yes">Pho(to|n)[\wäöüÄÖÜß-]*</token>
+                    <token regexp="yes" case_sensitive="yes">Photo[\wäöüÄÖÜß-]*</token>
                 </pattern>
-                <message>Möchten Sie die modernere Schreibweise <suggestion><match no="1" regexp_match="Photo(.*)" regexp_replace="Foto$1"/></suggestion> verwenden?</message>
+                <message>Möchten Sie die modernere Schreibweise <suggestion><match no="1" regexp_match="Photo" regexp_replace="Foto"/></suggestion> verwenden?</message>
                 <example correction="Fotoalbum">Sie blätterte gerne durch das <marker>Photoalbum</marker>.</example>
+                <example correction="Fotos">Sie machte viele <marker>Photos</marker>.</example>
             </rule>
-            <rule>
+            <rule><!--2-->
                 <antipattern>
-                    <token regexp="yes">Persephones?|Symphony|Babyphones?|Softphones?|.*photograph.*|.*photon|.*photonen.*|.*phono.*|.*phone[mt].*|symphoni.*|(.+)?Smartphone.*|Allophon.*|Siphon</token>
+                    <token regexp="yes">Alphonses?|Persephones?|Symphony|Babyphones?|Softphones?|.*photograph.*|.*photon|.*photonen.*|.*phono.*|.*phone[mt].*|symphoni.*|(.+)?Smartphone.*|Allophon.*|Siphon</token>
+                    <example>Ich erinnere mich daran, als du noch Alphonse Trebagoogoo warst.</example>
                 </antipattern>
                 <antipattern>
                     <token regexp="yes">https?.*|www.*</token>
@@ -6325,7 +6423,7 @@ USA
                 <example correction="Mithilfe"><marker>Mit Hilfe</marker> gefälschter Urinproben sei das Doping verschleiert worden.</example>
                 <example correction="mithilfe">Etliche Produkte, die für den Menschen interessant sind, werden <marker>mit Hilfe</marker> technisch veränderter Bakterien hergestellt.</example>
             </rule>
-            <rule><!--2-->
+            <rule default="off"><!--[2] replaced by new rule-->
                 <pattern>
                     <marker>
                         <token>von</token>
@@ -6400,12 +6498,12 @@ USA
                 </antipattern>
                 <pattern>
                     <token>zu</token>
-                    <token case_sensitive="yes" regexp="yes">Grunde|Gunsten|Rate|Rande|Stande|Schulden|Seiten|Lasten|Leide|Schanden|Nutze|Mute|Ungunsten|Wege|Tage</token>
+                    <token case_sensitive="yes" regexp="yes">Grunde|Rate|Rande|Stande|Schulden|Seiten|Lasten|Leide|Schanden|Nutze|Mute|Wege|Tage</token>
                 </pattern>
                 <message>Empfehlung: Möchten Sie die Schreibweise <suggestion><match no="1"/><match no="2" case_conversion="alllower"/></suggestion> verwenden?</message>
                 <short>&getrennt;.</short>
-                <example correction="zugunsten">Sie änderte das Testament <marker>zu Gunsten</marker> ihrer Tochter.</example>
-                <example correction="zugrunde">Für die Berechnung wurde eine grobe Abschäzung <marker>zu Grunde</marker> gelegt.</example>
+                <!--<example correction="zugunsten">Sie änderte das Testament <marker>zu Gunsten</marker> ihrer Tochter.</example>--><!--replaced by new rule-->
+                <example correction="zugrunde">Für die Berechnung wurde eine grobe Abschätzung <marker>zu Grunde</marker> gelegt.</example>
                 <example correction="zugrunde">Wenn er so weiter macht, wird er <marker>zu Grunde</marker> gehen.</example>
                 <example>Damit richtet er sich <marker>zugrunde</marker>.</example>
                 <example correction="zurande">Sie kamen damit nicht <marker>zu Rande</marker>.</example>

@@ -19,6 +19,8 @@
 package org.languagetool.openoffice;
 
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -30,6 +32,11 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.UIManager;
 
 import org.jetbrains.annotations.Nullable;
@@ -41,9 +48,11 @@ import org.languagetool.gui.Configuration;
 import org.languagetool.gui.ConfigurationDialog;
 import org.languagetool.openoffice.DocumentCache.TextParagraph;
 import org.languagetool.openoffice.OfficeTools.DocumentType;
+import org.languagetool.openoffice.OfficeTools.LoErrorType;
 import org.languagetool.openoffice.OfficeTools.OfficeProductInfo;
 import org.languagetool.openoffice.SingleDocument.RuleDesc;
 import org.languagetool.openoffice.SpellAndGrammarCheckDialog.LtCheckDialog;
+import org.languagetool.openoffice.stylestatistic.StatAnDialog;
 import org.languagetool.rules.CategoryId;
 import org.languagetool.rules.Rule;
 import org.languagetool.tools.Tools;
@@ -87,6 +96,8 @@ public class MultiDocumentsHandler {
 
   private static boolean debugMode = false;   //  should be false except for testing
   private static boolean debugModeTm = false;   //  should be false except for testing
+
+  public final boolean isOpenOffice;
   
   private SwJLanguageTool lt = null;
   private Language docLanguage = null;
@@ -106,7 +117,9 @@ public class MultiDocumentsHandler {
   private LtCheckDialog ltDialog = null;            //  LT spelling and grammar check dialog
   private ConfigurationDialog cfgDialog = null;     //  configuration dialog (show only one configuration panel)
   private static AboutDialog aboutDialog = null;           //  about dialog (show only one about panel)
-  private boolean dialogIsRunning = false;          //  The dialog was started     
+  private boolean dialogIsRunning = false;          //  The dialog was started
+  private WaitDialogThread waitDialog = null;
+
   
   private XComponentContext xContext;               //  The context of the document
   private final List<SingleDocument> documents;     //  The List of LO documents to be checked
@@ -133,6 +146,7 @@ public class MultiDocumentsHandler {
   private boolean testMode = false;
   private boolean javaLookAndFeelIsSet = false;
   private boolean isHelperDisposed = false;
+  private boolean statAnDialogRunning = false;
 
   
   MultiDocumentsHandler(XComponentContext xContext, XProofreader xProofreader, XEventListener xEventListener) {
@@ -140,7 +154,15 @@ public class MultiDocumentsHandler {
     this.xEventListener = xEventListener;
     this.xProofreader = xProofreader;
     xEventListeners = new ArrayList<>();
-    configFile = OfficeTools.CONFIG_FILE;
+    OfficeProductInfo officeInfo = OfficeTools.getOfficeProductInfo(xContext);
+    if (officeInfo == null || officeInfo.ooName.equals("OpenOffice")) {
+      isOpenOffice = true;
+      useOrginalCheckDialog = true;
+      configFile = OfficeTools.OOO_CONFIG_FILE;
+    } else {
+      isOpenOffice = false;
+      configFile = OfficeTools.CONFIG_FILE;
+    }
     configDir = OfficeTools.getLOConfigDir(xContext);
     oldConfigFile = OfficeTools.getOldConfigFile();
     MessageHandler.init(xContext);
@@ -212,9 +234,9 @@ public class MultiDocumentsHandler {
           this.locale = locale;
           extraRemoteRules.clear();
         }
-        if (lt == null) {
-          testFootnotes(propertyValues);
-        }
+//        if (lt == null) {
+//          testFootnotes(propertyValues);
+//        }
         lt = initLanguageTool(!isSameLanguage);
         initCheck(lt);
         if (initDocs) {
@@ -239,7 +261,7 @@ public class MultiDocumentsHandler {
       MessageHandler.printToLogFile("MultiDocumentsHandler: getCheckResults: Start getCheckResults at single document: " + paraText);
     }
 //    handleLtDictionary(paraText);
-    paRes = documents.get(docNum).getCheckResults(paraText, locale, paRes, propertyValues, docReset, lt);
+    paRes = documents.get(docNum).getCheckResults(paraText, locale, paRes, propertyValues, docReset, lt, LoErrorType.GRAMMAR);
     if (lt.doReset()) {
       // langTool.doReset() == true: if server connection is broken ==> switch to internal check
       MessageHandler.showMessage(messages.getString("loRemoteSwitchToLocal"));
@@ -387,6 +409,20 @@ public class MultiDocumentsHandler {
    */
   public void setConfigFileName(String name) {
     configFile = name;
+  }
+  
+  /**
+   *  Set dialog for statisical analysis running
+   */
+  public void setStatAnDialogRunning(boolean running) {
+    statAnDialogRunning = running;
+  }
+  
+  /**
+   *  use analyzed sentences cache
+   */
+  public boolean useAnalyzedSentencesCache() {
+    return !config.doRemoteCheck() || statAnDialogRunning;
   }
   
   /**
@@ -596,7 +632,17 @@ public class MultiDocumentsHandler {
    *  get LinguisticServices
    */
   public LinguisticServices getLinguisticServices() {
-     return linguServices;
+    if (linguServices == null) {
+      linguServices = new LinguisticServices(xContext);
+      MessageHandler.printToLogFile("MultiDocumentsHandler: getLinguisticServices: linguServices set: is " 
+            + (linguServices == null ? "" : "NOT ") + "null");
+      OfficeProductInfo officeProductInfo = OfficeTools.getOfficeProductInfo(xContext);
+      if (officeProductInfo != null && officeProductInfo.osArch.equals("x86")) {
+        Tools.setLinguisticServices(linguServices);
+        MessageHandler.printToLogFile("MultiDocumentsHandler: getLinguisticServices: linguServices set to tools");
+      }
+    }
+    return linguServices;
   }
   
   /**
@@ -891,15 +937,15 @@ public class MultiDocumentsHandler {
   /**
    * Initialize LanguageTool
    */
-  SwJLanguageTool initLanguageTool() {
+  public SwJLanguageTool initLanguageTool() {
     return initLanguageTool(null, false);
   }
 
-  SwJLanguageTool initLanguageTool(boolean setService) {
+  public SwJLanguageTool initLanguageTool(boolean setService) {
     return initLanguageTool(null, setService);
   }
 
-  SwJLanguageTool initLanguageTool(Language currentLanguage, boolean setService) {
+  public SwJLanguageTool initLanguageTool(Language currentLanguage, boolean setService) {
     SwJLanguageTool lt = null;
     try {
       config = new Configuration(configDir, configFile, oldConfigFile, docLanguage, true);
@@ -914,11 +960,7 @@ public class MultiDocumentsHandler {
       }
       noBackgroundCheck = config.noBackgroundCheck();
       if (linguServices == null) {
-        linguServices = new LinguisticServices(xContext);
-        OfficeProductInfo officeProductInfo = OfficeTools.getOfficeProductInfo(xContext);
-        if (officeProductInfo != null && officeProductInfo.osArch.equals("x86")) {
-          Tools.setLinguisticServices(linguServices);
-        }
+        linguServices = getLinguisticServices();
       }
       linguServices.setNoSynonymsAsSuggestions(config.noSynonymsAsSuggestions() || testMode);
       if (currentLanguage == null) {
@@ -945,6 +987,9 @@ public class MultiDocumentsHandler {
           }
         }
       }
+/*    
+ *    The spell rules will not be disabled (test version)
+ *         
       List<Rule> allRules = checkImpressDocument ? lt.getAllActiveRules() : lt.getAllActiveOfficeRules();
       for (Rule rule : allRules) {
         if (rule.isDictionaryBasedSpellingRule()) {
@@ -955,6 +1000,7 @@ public class MultiDocumentsHandler {
           }
         }
       }
+*/
       recheck = false;
       if (debugModeTm) {
         long runTime = System.currentTimeMillis() - startTime;
@@ -1159,7 +1205,7 @@ public class MultiDocumentsHandler {
   
   /**
    * Is true if footnotes exist (tests if OO or very old LO) 
-   */
+   *//*
   private void testFootnotes(PropertyValue[] propertyValues) {
     for (PropertyValue propertyValue : propertyValues) {
       if ("FootnotePositions".equals(propertyValue.Name)) {
@@ -1188,7 +1234,7 @@ public class MultiDocumentsHandler {
     configFile = OfficeTools.OOO_CONFIG_FILE;
     MessageHandler.printToLogFile("No support of Footnotes: Open Office assumed - Single paragraph check mode set!");
   }
-
+*/
   /**
    * Call method ignoreOnce for concerned document 
    */
@@ -1233,6 +1279,41 @@ public class MultiDocumentsHandler {
     }
   }
 
+  /**
+   * change configuration profile 
+   */
+  private void changeProfile(String profile) {
+    if (profile == null) {
+      profile = "";
+    }
+    MessageHandler.printToLogFile("change to profile: " + profile);
+    String currentProfile = config.getCurrentProfile();
+    if (currentProfile == null) {
+      currentProfile = "";
+    }
+    if (profile.equals(currentProfile)) {
+      MessageHandler.printToLogFile("profile == null or profile equals current profile: Not changed");
+      return;
+    }
+    List<String> definedProfiles = config.getDefinedProfiles();
+    if (!profile.isEmpty() && (definedProfiles == null || !definedProfiles.contains(profile))) {
+      MessageHandler.showMessage("profile '" + profile + "' not found");
+    } else {
+      try {
+        List<String> saveProfiles = new ArrayList<>();
+        saveProfiles.addAll(config.getDefinedProfiles());
+        config.initOptions();
+        config.loadConfiguration(profile == null ? "" : profile);
+        config.setCurrentProfile(profile);
+        config.addProfiles(saveProfiles);
+        config.saveConfiguration(getCurrentDocument().getLanguage());
+        resetConfiguration();
+      } catch (IOException e) {
+        MessageHandler.showError(e);
+      }
+    }
+  }
+  
   /**
    * Activate a rule by rule iD
    */
@@ -1523,11 +1604,17 @@ public class MultiDocumentsHandler {
   /**
    * Triggers the events from LT menu
    */
+  @SuppressWarnings("null")
   public void trigger(String sEvent) {
     try {
+      MessageHandler.printToLogFile("Trigger event: " + sEvent);
       long startTime = 0;
       if (debugModeTm) {
         startTime = System.currentTimeMillis();
+      }
+      if (("checkDialog".equals(sEvent) || "checkAgainDialog".equals(sEvent)) && !useOrginalCheckDialog && !dialogIsRunning) {
+        waitDialog = new WaitDialogThread("Please wait", messages.getString("loWaitMessage"));
+        waitDialog.start();
       }
       if (!testDocLanguage(true)) {
         MessageHandler.printToLogFile("Test for document language failed: Can't trigger event: " + sEvent);
@@ -1546,9 +1633,10 @@ public class MultiDocumentsHandler {
         }
         AboutDialogThread aboutThread = new AboutDialogThread(messages, xContext);
         aboutThread.start();
-      } else if ("toggleNoBackgroundCheck".equals(sEvent)) {
+      } else if ("toggleNoBackgroundCheck".equals(sEvent) || "backgroundCheckOn".equals(sEvent) || "backgroundCheckOff".equals(sEvent)) {
         if (toggleNoBackgroundCheck()) {
-          resetCheck(); 
+          resetCheck();
+          getCurrentDocument().getLtToolbar().makeToolbar();
         }
       } else if ("ignoreOnce".equals(sEvent)) {
         ignoreOnce();
@@ -1559,6 +1647,9 @@ public class MultiDocumentsHandler {
       } else if (sEvent.startsWith("activateRule_")) {
         String ruleId = sEvent.substring(13);
         activateRule(ruleId);
+      } else if (sEvent.startsWith("profileChangeTo_")) {
+        String profile = sEvent.substring(16);
+        changeProfile(profile);
       } else if (sEvent.startsWith("addToDictionary_")) {
         String[] sArray = sEvent.substring(16).split(":");
         LtDictionary.addWordToDictionary(sArray[0], sArray[1], xContext);;
@@ -1577,8 +1668,11 @@ public class MultiDocumentsHandler {
         if (dialogIsRunning) {
           return;
         }
+        if (waitDialog == null || waitDialog.canceled()) {
+          return;
+        }
         setLtDialogIsRunning(true);
-        SpellAndGrammarCheckDialog checkDialog = new SpellAndGrammarCheckDialog(xContext, this, docLanguage);
+        SpellAndGrammarCheckDialog checkDialog = new SpellAndGrammarCheckDialog(xContext, this, docLanguage, waitDialog);
         if ("checkAgainDialog".equals(sEvent)) {
           SingleDocument document = getCurrentDocument();
           if (document != null) {
@@ -1595,7 +1689,7 @@ public class MultiDocumentsHandler {
             }
           }
           resetIgnoredMatches();
-          resetCheck();
+//          resetCheck();
         }
         if (debugMode) {
           MessageHandler.printToLogFile("MultiDocumentsHandler: trigger: Start Spell And Grammar Check Dialog");
@@ -1606,7 +1700,11 @@ public class MultiDocumentsHandler {
           MessageHandler.showMessage(messages.getString("loExtSwitchOffMessage"));
           return;
         }
-        SpellAndGrammarCheckDialog checkDialog = new SpellAndGrammarCheckDialog(xContext, this, docLanguage);
+        if (useOrginalCheckDialog) {
+          OfficeTools.dispatchCmd(".uno:SpellingAndGrammarDialog", xContext);
+          return;
+        }
+        SpellAndGrammarCheckDialog checkDialog = new SpellAndGrammarCheckDialog(xContext, this, docLanguage, null);
         checkDialog.nextError();
       } else if ("refreshCheck".equals(sEvent)) {
         if (ltDialog != null) {
@@ -1620,6 +1718,9 @@ public class MultiDocumentsHandler {
         resetDocumentCaches();
         resetResultCaches(true);
         resetDocument();
+      } else if ("statisticalAnalyses".equals(sEvent)) {
+        StatAnDialog statAnDialog = new StatAnDialog(getCurrentDocument());
+        statAnDialog.start();
       } else if ("writeAnalyzedParagraphs".equals(sEvent)) {
         new AnalyzedParagraphsCache(this); 
       } else if ("remoteHint".equals(sEvent)) {
@@ -1650,7 +1751,7 @@ public class MultiDocumentsHandler {
   boolean testDocLanguage(boolean showMessage) throws Throwable {
     if (docLanguage == null) {
       if (linguServices == null) {
-        linguServices = new LinguisticServices(xContext);
+        linguServices = getLinguisticServices();
       }
 /*
       if (!linguServices.spellCheckerIsActive()) {
@@ -2081,4 +2182,134 @@ public class MultiDocumentsHandler {
     
   }
 
+  /**
+   * class to run a dialog in a separate thread
+   * closing if lost focus
+   */
+  public class WaitDialogThread extends Thread {
+    private final String dialogName;
+    private final String text;
+    private JDialog dialog = null;
+    private boolean isCanceled = false;
+    JProgressBar progressBar;
+
+    public WaitDialogThread(String dialogName, String text) {
+      this.dialogName = dialogName;
+      this.text = text;
+    }
+
+    @Override
+    public void run() {
+      JLabel textLabel = new JLabel(text);
+      JButton cancelBottom = new JButton(messages.getString("guiCancelButton"));
+      cancelBottom.addActionListener(e -> {
+        close_intern();
+      });
+      progressBar = new JProgressBar();
+      progressBar.setIndeterminate(true);
+      dialog = new JDialog();
+      Container contentPane = dialog.getContentPane();
+      dialog.setName("InformationThread");
+      dialog.setTitle(dialogName);
+      dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+      dialog.addWindowListener(new WindowListener() {
+        @Override
+        public void windowOpened(WindowEvent e) {
+        }
+        @Override
+        public void windowClosing(WindowEvent e) {
+          close_intern();
+        }
+        @Override
+        public void windowClosed(WindowEvent e) {
+        }
+        @Override
+        public void windowIconified(WindowEvent e) {
+        }
+        @Override
+        public void windowDeiconified(WindowEvent e) {
+        }
+        @Override
+        public void windowActivated(WindowEvent e) {
+        }
+        @Override
+        public void windowDeactivated(WindowEvent e) {
+        }
+      });
+      JPanel panel = new JPanel();
+      panel.setLayout(new GridBagLayout());
+      GridBagConstraints cons = new GridBagConstraints();
+      cons.insets = new Insets(16, 24, 16, 24);
+      cons.gridx = 0;
+      cons.gridy = 0;
+      cons.weightx = 1.0f;
+      cons.weighty = 10.0f;
+      cons.anchor = GridBagConstraints.CENTER;
+      cons.fill = GridBagConstraints.BOTH;
+      panel.add(textLabel, cons);
+      cons.gridy++;
+      panel.add(progressBar, cons);
+      cons.gridy++;
+      cons.fill = GridBagConstraints.NONE;
+      panel.add(cancelBottom, cons);
+      contentPane.setLayout(new GridBagLayout());
+      cons = new GridBagConstraints();
+      cons.insets = new Insets(16, 32, 16, 32);
+      cons.gridx = 0;
+      cons.gridy = 0;
+      cons.weightx = 1.0f;
+      cons.weighty = 1.0f;
+      cons.anchor = GridBagConstraints.NORTHWEST;
+      cons.fill = GridBagConstraints.BOTH;
+      contentPane.add(panel);
+      dialog.pack();
+      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+      Dimension frameSize = dialog.getSize();
+      dialog.setLocation(screenSize.width / 2 - frameSize.width / 2,
+          screenSize.height / 2 - frameSize.height / 2);
+      dialog.setAutoRequestFocus(true);
+      dialog.setAlwaysOnTop(true);
+      dialog.toFront();
+      if (debugMode) {
+        MessageHandler.printToLogFile("WaitDialogThread: run: Dialog is running");
+      }
+      dialog.setVisible(true);
+      if (isCanceled) {
+        dialog.setVisible(false);
+        dialog.dispose();
+      }
+    }
+    
+    public boolean canceled() {
+      return isCanceled;
+    }
+    
+    public void close() {
+      close_intern();
+    }
+    
+    private void close_intern() {
+      if (debugMode) {
+        MessageHandler.printToLogFile("WaitDialogThread: close: Dialog closed");
+      }
+      isCanceled = true;
+      if (dialog != null) {
+        dialog.setVisible(false);
+        dialog.dispose();
+      }
+    }
+    
+    public void initializeProgressBar(int min, int max) {
+      progressBar.setMinimum(min);
+      progressBar.setMaximum(max);
+      progressBar.setStringPainted(true);
+      progressBar.setIndeterminate(false);
+    }
+    
+    public void setValueForProgressBar(int val) {
+      progressBar.setValue(val);
+    }
+    
+  }
 }
+

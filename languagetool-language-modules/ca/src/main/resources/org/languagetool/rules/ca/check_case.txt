@@ -1,5 +1,5 @@
 # Phrases to check case. Capitalization at the sentence start is allowed.
-# Optionally, add a specific message after '=' 
+# Optionally, add a specific message after '='
 Joan Pau
 Josep Maria
 Joan Maria
@@ -82,6 +82,7 @@ el Segrià
 la Terra Alta
 l'Urgell
 la Vall d'Aran
+Vall d'Aran
 el Vallès Occidental
 el Vallès Oriental
 l'Alta Cerdanya
@@ -156,6 +157,9 @@ Congrés dels Estats Units
 Congrés dels Estats Units d'Amèrica
 Cambra de Representants
 educació secundària
+graduat en educació secundària
+graduat en educació secundària obligatòria
+graduat en educació secundària per a adults
 Institut d'Educació Secundària
 Col·legi d'Educació Infantil i Primària
 Educació Secundària Obligatòria
@@ -195,7 +199,7 @@ Primavera Àrab
 Revolució Francesa
 Revolució Russa
 Revolució de Vellut de l'antiga Txecoslovàquia
-Revolució de les Tulipes del Kirguizistan
+Revolució de les Tulipes del Kirguizstan
 Revolució Taronja d'Ucraïna
 Revolució del Gessamí de Tunísia
 Revolució dels Paraigües de Hong Kong
@@ -754,3 +758,50 @@ Diada de Catalunya
 Diada nacional de Catalunya
 Diada nacional
 festa nacional de Catalunya
+bitcoins
+dòlars
+euros
+País Basc
+Google Play Store
+Play Store
+la Play
+una Play
+App Store
+Parlament de les Illes Balears
+presidenta de les Illes Balears
+president de les Illes Balears
+govern de les Illes Balears
+WiZink Center
+enquesta de població activa
+Bartolomé de las Casas
+de las Casas
+la Diada del País Valencià
+la Diada nacional del País Valencià
+la festa nacional del País Valencià
+Sant Pere de Rodes
+Sant Miquel dels Reis
+Corea del Nord
+Corea del Sud
+La Bohème
+El Celler de Can Roca
+Concili Vaticà
+Jocs Panamericans
+Copa Davis
+El Bulli
+Escola Parc de la Ciutadella
+Buenos Aires
+virus FIFA
+Llei d'ús i ensenyament del valencià
+impost de successions
+impost sobre activitats econòmiques
+taxa Google
+taxa Netflix
+taxa Tobin
+impost sobre successions i donacions
+República Txeca
+República de Sud-àfrica
+sistema mètric decimal
+sistema internacional d'unitats
+Ho Chi Minh
+Carmina Burana
+intel·ligència artificial general

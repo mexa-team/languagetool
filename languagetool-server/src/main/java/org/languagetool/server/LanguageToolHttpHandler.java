@@ -51,6 +51,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 
 import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
 import static org.languagetool.server.ServerTools.getHttpReferrer;
@@ -123,7 +124,8 @@ class LanguageToolHttpHandler implements HttpHandler {
         // healthcheck should come before other limit checks (requests per time etc.), to be sure it works: 
         String pathWithoutVersion = path.substring("/v2/".length());
         if (pathWithoutVersion.equals("healthcheck")) {
-          if (workQueueFull(httpExchange, parameters, "Healthcheck failed: There are currently too many parallel requests.")) {
+          String message = "Healthcheck failed: There are currently too many parallel requests.";
+          if (workQueueFull(httpExchange, parameters, message) || textCheckerQueueFull(httpExchange, message)) {
             ServerMetricsCollector.getInstance().logFailedHealthcheck();
             return;
           } else {
@@ -141,9 +143,9 @@ class LanguageToolHttpHandler implements HttpHandler {
       for (String ref : config.getBlockedReferrers()) {
         String errorMessage = null;
         if (ref != null && !ref.isEmpty()) {
-          if (referrer != null && siteMatches(referrer, ref)) {
+          if (referrer != null && ServerTools.siteMatches(referrer, ref)) {
             errorMessage = "Error: Access with referrer " + referrer + " denied.";
-          } else if (origin != null && siteMatches(origin, ref)) {
+          } else if (origin != null && ServerTools.siteMatches(origin, ref)) {
             errorMessage = "Error: Access with origin " + origin + " denied.";
           }
         }
@@ -307,16 +309,18 @@ class LanguageToolHttpHandler implements HttpHandler {
     return false;
   }
 
-  private boolean siteMatches(String referrer, String blockedRef) {
-    return referrer.startsWith(blockedRef) || 
-           referrer.startsWith("http://" + blockedRef) || referrer.startsWith("https://" + blockedRef) ||
-           referrer.startsWith("http://www." + blockedRef) || referrer.startsWith("https://www." + blockedRef);
-  }
-
   private boolean workQueueFull(HttpExchange httpExchange, Map<String, String> parameters, String response) throws IOException {
     if (config.getMaxWorkQueueSize() != 0 && workQueue.size() > config.getMaxWorkQueueSize()) {
       String message = response + " queue size: " + workQueue.size() + ", maximum size: " + config.getMaxWorkQueueSize();
       logError(message, HTTP_UNAVAILABLE, parameters, httpExchange);
+      sendError(httpExchange, HTTP_UNAVAILABLE, "Error: " + response);
+      return true;
+    }
+    return false;
+  }
+
+  private boolean textCheckerQueueFull(HttpExchange httpExchange, String response) throws IOException {
+    if(textCheckerV2.checkerQueueAlmostFull()) {
       sendError(httpExchange, HTTP_UNAVAILABLE, "Error: " + response);
       return true;
     }
@@ -468,8 +472,10 @@ class LanguageToolHttpHandler implements HttpHandler {
     return parameters;
   }
 
+  private static final Pattern QUERY_PARAM_SPLIT = Pattern.compile("&");
+
   private Map<String, String> getParameterMap(String query, HttpExchange httpExchange) throws UnsupportedEncodingException {
-    String[] pairs = query.split("[&]");
+    String[] pairs = QUERY_PARAM_SPLIT.split(query);
     Map<String, String> parameters = new HashMap<>();
     for (String pair : pairs) {
       int delimPos = pair.indexOf('=');

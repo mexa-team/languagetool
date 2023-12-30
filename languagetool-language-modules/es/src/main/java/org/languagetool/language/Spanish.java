@@ -25,6 +25,7 @@ import org.languagetool.languagemodel.LanguageModel;
 import org.languagetool.rules.*;
 import org.languagetool.rules.es.*;
 import org.languagetool.rules.spelling.SpellingCheckRule;
+import org.languagetool.rules.spelling.multitoken.MultitokenSpeller;
 import org.languagetool.synthesis.Synthesizer;
 import org.languagetool.synthesis.es.SpanishSynthesizer;
 import org.languagetool.tagging.Tagger;
@@ -62,7 +63,8 @@ public class Spanish extends Language implements AutoCloseable {
             "BO", "SV", "HN", "NI", "PR", "US", "CU"
     };
   }
-  
+
+  @Override
   public Language getDefaultLanguageVariant() {
     return Languages.getLanguageForShortCode("es");
   }
@@ -122,7 +124,7 @@ public class Spanish extends Language implements AutoCloseable {
             new SpanishWordRepeatRule(messages, this),
             new MultipleWhitespaceRule(messages, this),
             new SpanishWikipediaRule(messages),
-            new SpanishWrongWordInContextRule(messages),
+            new SpanishWrongWordInContextRule(messages, this),
             new LongSentenceRule(messages, userConfig, 60),
             new LongParagraphRule(messages, this, userConfig),
             new SimpleReplaceRule(messages, this),
@@ -268,6 +270,13 @@ public class Spanish extends Language implements AutoCloseable {
     if (id.startsWith("AI_ES_HYDRA_LEO")) { // prefer more specific rules (also speller)
       return -101;
     }
+    if (id.startsWith("AI_ES_GGEC")) { // prefer more specific rules (also speller)
+      return 0;
+      //return -102;
+    }
+    if (id.startsWith("ES_MULTITOKEN_SPELLING")) {
+      return -95;
+    }
 
     //STYLE is -50
     return super.getPriorityForId(id);
@@ -285,5 +294,26 @@ public class Spanish extends Language implements AutoCloseable {
     String newReplacement = m.replaceAll("$1$2");
     return newReplacement;
   }
-  
+
+  @Override
+  public String prepareLineForSpeller(String line) {
+    String[] parts = line.split("#");
+    if (parts.length == 0) {
+      return line;
+    }
+    String[] formTag = parts[0].split("[\t;]");
+    if (formTag.length > 1) {
+      String tag = formTag[1].trim();
+      if (tag.startsWith("N") || tag.equals("_Latin_") || tag.equals("LOC_ADV")) {
+        return formTag[0].trim();
+      } else {
+        return "";
+      }
+    }
+    return line;
+  }
+
+  public MultitokenSpeller getMultitokenSpeller() {
+    return SpanishMultitokenSpeller.INSTANCE;
+  }
 }

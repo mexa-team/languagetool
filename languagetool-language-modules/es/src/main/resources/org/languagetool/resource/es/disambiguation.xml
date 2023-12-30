@@ -138,9 +138,9 @@ Copyright (C) 2011 Juan Martorell
         </pattern>
         <disambig action="remove" postag="NCMP000"/>
     </rule>
-    <rule id="HAS" name="has (voseo)">
+    <rule id="HAS" name="has, estás (voseo)">
         <pattern>
-            <token postag="VAIP2V0">has</token>
+            <token postag="VAIP2V0" regexp="yes">has|estás</token>
         </pattern>
         <disambig action="remove" postag="VAIP2V0"/>
     </rule>
@@ -313,6 +313,19 @@ Copyright (C) 2011 Juan Martorell
                 <token>del</token>
             </pattern>
             <disambig action="replace">
+                <wd pos="LOC_PREP"/>
+            </disambig>
+        </rule>
+        <rule id="en_pos_del" name="en pos del">
+            <pattern>
+                <marker>
+                    <token>en</token>
+                    <token>pos</token>
+                </marker>
+                <token>del</token>
+            </pattern>
+            <disambig action="replace">
+                <wd pos="LOC_PREP"/>
                 <wd pos="LOC_PREP"/>
             </disambig>
         </rule>
@@ -705,7 +718,7 @@ Copyright (C) 2011 Juan Martorell
         <rule>
             <pattern>
                 <marker>
-                    <token regexp="yes">paleo|histórico|hispano|anglo</token>
+                    <token regexp="yes">paleo|histórico|hispano|anglo|pos</token>
                 </marker>
                 <token spacebefore="no">-</token>
                 <token postag="[NA].*" postag_regexp="yes" spacebefore="no"/>
@@ -729,6 +742,16 @@ Copyright (C) 2011 Juan Martorell
                 <token inflected="yes">fitosanitario</token>
             </pattern>
             <disambig action="ignore_spelling"/>
+        </rule>
+        <rule>
+            <pattern>
+                <marker>
+                    <token regexp="yes">pre|pos|post</token>
+                </marker>
+                <token spacebefore="no">-</token>
+                <token spacebefore="no" regexp="yes">[\p{Lu}\d].*</token>
+            </pattern>
+            <disambig action="replace" postag="RG"/>
         </rule>
     </rulegroup>
     <rule id="DEMASIADO" name="demasiado">
@@ -1186,6 +1209,17 @@ Copyright (C) 2011 Juan Martorell
                 <marker>
                     <token regexp="yes">(?=.)m{0,4}(cm|cd|d?c{0,3})(xc|xl|l?x{0,3})(ix|iv|v?i{0,3})</token>
                 </marker>
+            </pattern>
+            <disambig action="add">
+                <wd pos="AO0CN0"/>
+            </disambig>
+        </rule>
+        <rule>
+            <pattern case_sensitive="yes">
+                <marker>
+                    <token regexp="yes">(?=.)m{0,4}(cm|cd|d?c{0,3})(xc|xl|l?x{0,3})(ix|iv|v?i{0,3})</token>
+                </marker>
+                <token>)</token>
             </pattern>
             <disambig action="add">
                 <wd pos="AO0CN0"/>
@@ -1721,6 +1755,30 @@ Copyright (C) 2011 Juan Martorell
             <disambig action="remove" postag="N.*"/>
         </rule>
     </rulegroup>
+    <rule id="nublado_no_nombre" name="nublado (no nombre)">
+        <pattern>
+            <marker>
+                <token postag="VMP.*" postag_regexp="yes" inflected="yes">nublar</token>
+            </marker>
+        </pattern>
+        <disambig action="remove" postag="NC.*"/>
+    </rule>
+    <rule id="lleno_no_nombre" name="lleno, llena (no nombre)">
+        <!--<antipattern>
+            <unify>
+                <feature id="genero"></feature>
+                <feature id="numero"></feature>
+                <token postag="D.*" postag_regexp="yes"/>
+                <token inflected="yes" regexp="yes">lleno|llena</token>
+            </unify>
+        </antipattern>-->
+        <pattern>
+            <marker>
+                <token postag="AQ.*" postag_regexp="yes" inflected="yes">lleno</token>
+            </marker>
+        </pattern>
+        <disambig action="remove" postag="NC.*"/>
+    </rule>
     <rule id="este_no_nombre" name="este (no nombre)">
         <pattern>
             <marker>
@@ -5644,9 +5702,9 @@ Copyright (C) 2011 Juan Martorell
     </rule>
     <rule id="la_not_noun" name="la not noun">
         <pattern>
-            <token>la<exception postag="_GN_MS"/></token>
+            <token postag="[DP].*" postag_regexp="yes">la<exception postag="_GN_MS"/></token>
         </pattern>
-        <disambig action="remove" postag="N.*"/>
+        <disambig action="remove" postag="NC.*"/>
     </rule>
     <rule id="la_dejo" name="la dejo (verb)">
         <antipattern>
@@ -5671,6 +5729,10 @@ Copyright (C) 2011 Juan Martorell
         <disambig action="filterall"/>
     </rule>
     <rulegroup id="not_noun_no_agreement0" name="not noun if no agreement">
+        <antipattern>
+            <token regexp="yes">del|al</token>
+            <token postag="NC[MC]S000" postag_regexp="yes"/>
+        </antipattern>
         <rule>
             <pattern>
                 <marker>
@@ -5819,6 +5881,10 @@ Copyright (C) 2011 Juan Martorell
         <disambig action="remove" postag="N.*|V.[SI].*"/>
     </rule>
     <rulegroup id="not_noun_no_agreement1" name="not noun if no agreement">
+        <antipattern>
+            <token regexp="yes">del|al</token>
+            <token postag="NC[MC]S000" postag_regexp="yes"/>
+        </antipattern>
         <rule>
             <pattern>
                 <marker>
@@ -6435,6 +6501,24 @@ Copyright (C) 2011 Juan Martorell
                 </marker>
             </pattern>
             <disambig action="remove" postag="V.M.*"/>
+        </rule>
+    </rulegroup>
+    <rulegroup id="imperative_not_indicative" name="imperativo, no indicativo">
+        <rule>
+            <pattern>
+                <token postag="SENT_START"/>
+                <token min="0" max="3" regexp="yes">\p{P}</token>
+                <marker>
+                <and>
+                    <token postag="V.[SI].*" postag_regexp="yes" skip="7"/>
+                    <token postag="V.M.*" postag_regexp="yes"/>
+                </and>
+                </marker>
+                <!--<token>o</token>-->
+                <token>si</token>
+                <token>no</token>
+            </pattern>
+            <disambig action="remove" postag="V.[SI].*"/>
         </rule>
     </rulegroup>
     <rulegroup id="allowed_repetitions" name="allowed repetitions">
@@ -7634,6 +7718,23 @@ Copyright (C) 2011 Juan Martorell
         </pattern>
         <disambig action="ignore_spelling"/>
     </rule>
+    <rulegroup id="ignore_pp" name="ignorar pp (puntos porcentuales">
+        <rule>
+            <pattern>
+                <token regexp="yes">[\d \.,]+\dpp</token>
+            </pattern>
+            <disambig action="ignore_spelling"/>
+        </rule>
+        <rule>
+            <pattern>
+                <token regexp="yes">[\d \.,]+\d</token>
+                <marker>
+                    <token>pp</token>
+                </marker>
+            </pattern>
+            <disambig action="ignore_spelling"/>
+        </rule>
+    </rulegroup>
     <rulegroup id="onomatopeyas" name="algunas onomatopeyas">
         <rule>
             <pattern>
@@ -7658,7 +7759,25 @@ Copyright (C) 2011 Juan Martorell
         </pattern>
         <disambig action="ignore_spelling"/>
     </rule>
+    <rule id="APOSTROPHE" name="apóstrofo, no comillas">
+        <pattern>
+            <token regexp="yes">\p{L}+<exception regexp="yes">[\(«“]</exception><exception postag="SENT_START"/></token>
+            <marker>
+                <token spacebefore="no" regexp="yes">['’]</token>
+            </marker>
+            <token spacebefore="no" regexp="yes">\p{L}+</token>
+        </pattern>
+        <disambig action="add">
+            <wd pos="_allow_apostrophe"/>
+        </disambig>
+    </rule>
     <rulegroup id="IGNORE_SPELLING_OF_ABBREVIATIONS" name="Ignore spelling of some uppercase abbreviations">
+        <rule>
+            <pattern>
+                <token regexp="yes">\d+xx?|x\d+</token>
+            </pattern>
+            <disambig action="ignore_spelling"/>
+        </rule>
         <rule>
             <!-- lowercase word + abbreviation with no vowels -->
             <pattern case_sensitive="yes">
@@ -7707,6 +7826,38 @@ Copyright (C) 2011 Juan Martorell
                     <token regexp="yes">&meses_ano_abrv;</token>
                 </marker>
                 <token regexp="yes">\d+</token>
+            </pattern>
+            <disambig action="ignore_spelling"/>
+        </rule>
+        <rule>
+            <pattern>
+                <marker>
+                    <token regexp="yes">\d\d?(&meses_ano_abrv;)\d\d(\d\d)?</token>
+                </marker>
+            </pattern>
+            <disambig action="ignore_spelling"/>
+        </rule>
+        <rule>
+            <pattern>
+                <marker>
+                    <token regexp="yes">\d\d?</token>
+                    <token>-</token>
+                    <token regexp="yes">&meses_ano_abrv;</token>
+                    <token>-</token>
+                    <token regexp="yes">\d\d(\d\d)?</token>
+                </marker>
+            </pattern>
+            <disambig action="ignore_spelling"/>
+        </rule>
+        <rule>
+            <pattern>
+                <marker>
+                    <token regexp="yes">\d\d?</token>
+                    <token>/</token>
+                    <token regexp="yes">&meses_ano_abrv;</token>
+                    <token>/</token>
+                    <token regexp="yes">\d\d(\d\d)?</token>
+                </marker>
             </pattern>
             <disambig action="ignore_spelling"/>
         </rule>
@@ -7774,6 +7925,27 @@ Copyright (C) 2011 Juan Martorell
             <disambig action="ignore_spelling"/>
         </rule>
     </rulegroup>
+    <rule id="ignore_uppercase_letters" name="A a Z">
+        <antipattern case_sensitive="yes">
+            <token>y</token>
+            <token>Y</token>
+        </antipattern>
+        <pattern case_sensitive="yes">
+            <token regexp="yes">[A-Z]</token>
+            <token regexp="yes">[aoy]</token>
+            <token regexp="yes">[A-Z]</token>
+        </pattern>
+        <disambig action="immunize"/>
+    </rule>
+    <rule id="ABREVIATURAS_CON_PUNTO" name="abreviaturas con punto">
+        <pattern>
+            <marker>
+                <token regexp="yes" case_sensitive="yes">&abreviaturas;</token>
+            </marker>
+            <token spacebefore="no">.</token>
+        </pattern>
+        <disambig action="ignore_spelling"/>
+    </rule>
     <!-- CHUNKER -->
     <rulegroup id="PERIFRASIS_VERBALES" name="perífrasis verbales">
         <rule>

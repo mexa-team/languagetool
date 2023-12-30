@@ -110,7 +110,7 @@ class CheckRequestAnalysis {
    */
   int getNumberOfParagraphFromSortedTextId(int sortedTextId, int documentElementsCount, String paraText, Locale locale, int[] footnotePosition) {
     //  test if doc cache has changed --> actualize
-    if (!docCache.isActual(documentElementsCount)) {
+    if (proofInfo != OfficeTools.PROOFINFO_GET_PROOFRESULT && !docCache.isActual(documentElementsCount)) {
 //      singleDocument.getFlatParagraphTools().resetFlatParagraphsAndGetCurNum(true);
       handleCacheChanges();
       if (debugMode > 0) {
@@ -118,10 +118,11 @@ class CheckRequestAnalysis {
       }
     }
     int paraNum = docCache.getFlatparagraphFromSortedTextId(sortedTextId);
+    if (proofInfo == OfficeTools.PROOFINFO_GET_PROOFRESULT) {
+      return paraNum;
+    }
     //  if number of paragraph < 0 --> actualize doc cache and try again
-//    if (paraNum < 0 || docCache.nearestParagraphHasChanged(paraNum, singleDocument.getFlatParagraphTools())) {
     if (paraNum < 0) {
-//      singleDocument.getFlatParagraphTools().resetFlatParagraphsAndGetCurNum(true);
       handleCacheChanges();
       paraNum = docCache.getFlatparagraphFromSortedTextId(sortedTextId);
       if (debugMode > 0) {
@@ -643,7 +644,7 @@ class CheckRequestAnalysis {
    * adjust the result cache to changes
    */
   private boolean handleCacheChanges() {
-    if (useQueue) {
+    if (useQueue && mDocHandler.getTextLevelCheckQueue() != null) {
       mDocHandler.getTextLevelCheckQueue().interruptCheck(docID, true);
     }
     ChangedRange changed = docCache.refreshAndCompare(singleDocument, LinguisticServices.getLocale(fixedLanguage), 
@@ -660,6 +661,9 @@ class CheckRequestAnalysis {
     if(!isDisposed()) {
       for (ResultCache cache : paragraphsCache) {
         cache.removeAndShift(changed.from, changed.to, changed.oldSize, changed.newSize);
+      }
+      if (mDocHandler.useAnalyzedSentencesCache()) {
+        docCache.removeAndShiftAnalyzedParagraph(changed.from, changed.to, changed.oldSize, changed.newSize);
       }
       if (useQueue) {
         if (debugMode > 0) {

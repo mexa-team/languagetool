@@ -353,8 +353,9 @@ public class UkrainianTaggerTest {
   
   @Test
   public void testDynamicTaggingFixedParts() throws IOException {
-    TestTools.myAssert("пів-України", "пів-України/[пів-України]noun:inanim:p:v_dav:prop:geo:ua_1992|пів-України/[пів-України]noun:inanim:p:v_mis:prop:geo:ua_1992|пів-України/[пів-України]noun:inanim:p:v_naz:prop:geo:ua_1992"
-        + "|пів-України/[пів-України]noun:inanim:p:v_oru:prop:geo:ua_1992|пів-України/[пів-України]noun:inanim:p:v_rod:prop:geo:ua_1992|пів-України/[пів-України]noun:inanim:p:v_zna:prop:geo:ua_1992"
+    TestTools.myAssert("пів-України", "пів-України/[пів-України]noun:inanim:p:v_dav:prop:geo:nv:ua_1992|пів-України/[пів-України]noun:inanim:p:v_mis:prop:geo:nv:ua_1992"
+        + "|пів-України/[пів-України]noun:inanim:p:v_naz:prop:geo:nv:ua_1992|пів-України/[пів-України]noun:inanim:p:v_oru:prop:geo:nv:ua_1992|пів-України/[пів-України]noun:inanim:p:v_rod:prop:geo:nv:ua_1992"
+        + "|пів-України/[пів-України]noun:inanim:p:v_zna:prop:geo:nv:ua_1992"
         , tokenizer, tagger);
 
     TestTools.myAssert("Пенсильванія-авеню", "Пенсильванія-авеню/[Пенсильванія-авеню]noun:inanim:f:v_dav:nv:prop|Пенсильванія-авеню/[Пенсильванія-авеню]noun:inanim:f:v_mis:nv:prop"
@@ -364,7 +365,7 @@ public class UkrainianTaggerTest {
         + "|Уолл-стрит/[Уолл-стрит]noun:inanim:f:v_oru:nv:prop|Уолл-стрит/[Уолл-стрит]noun:inanim:f:v_rod:nv:prop|Уолл-стрит/[Уолл-стрит]noun:inanim:f:v_zna:nv:prop"
         , tokenizer, tagger);
 
-    TestTools.myAssert("пів-години", "пів-години/[пів-години]noun:inanim:p:v_dav:bad|пів-години/[пів-години]noun:inanim:p:v_mis:bad|пів-години/[пів-години]noun:inanim:p:v_naz:bad|пів-години/[пів-години]noun:inanim:p:v_oru:bad|пів-години/[пів-години]noun:inanim:p:v_rod:bad|пів-години/[пів-години]noun:inanim:p:v_zna:bad"
+    TestTools.myAssert("пів-години", "пів-години/[пів-години]noun:inanim:p:v_dav:nv:bad|пів-години/[пів-години]noun:inanim:p:v_mis:nv:bad|пів-години/[пів-години]noun:inanim:p:v_naz:nv:bad|пів-години/[пів-години]noun:inanim:p:v_oru:nv:bad|пів-години/[пів-години]noun:inanim:p:v_rod:nv:bad|пів-години/[пів-години]noun:inanim:p:v_zna:nv:bad"
         , tokenizer, tagger);
   }        
 
@@ -464,6 +465,16 @@ public class UkrainianTaggerTest {
 
     TestTools.myAssert("ненависть-шоу", "ненависть-шоу/[ненависть-шоу]noun:inanim:f:v_naz|ненависть-шоу/[ненависть-шоу]noun:inanim:f:v_zna", tokenizer, tagger);
 
+    TestTools.myAssert("Київ-Прага", "Київ-Прага/[Київ-Прага]noninfl:prop:geo", tokenizer, tagger);
+    TestTools.myAssert("Україна-ЄС", "Україна-ЄС/[Україна-ЄС]noninfl:prop", tokenizer, tagger);
+    TestTools.myAssert("Хуана-Карлоса", "Хуана-Карлоса/[Хуан-Карлос]noun:anim:m:v_rod:prop:fname|Хуана-Карлоса/[Хуан-Карлос]noun:anim:m:v_zna:prop:fname", tokenizer, tagger);
+    // подружжя, сім'я, пара
+    TestTools.myAssert("Карпа-Хансен", "Карпа-Хансен/[Карпа-Хансен]noninfl:prop:lname", tokenizer, tagger);
+    TestTools.myAssert("Джолі-Пітт", "Джолі-Пітт/[Джолі-Пітт]noninfl:prop:lname", tokenizer, tagger);
+    TestTools.myAssert("Джеймса-Веніка", "Джеймса-Веніка/[Джеймса-Веніка]noninfl:prop:lname", tokenizer, tagger);
+    TestTools.myAssert("БАЛОГИ-КОЛЕСНІКОВА", "БАЛОГИ-КОЛЕСНІКОВА/[Балоги-Колеснікова]noninfl:prop:lname", tokenizer, tagger);
+    TestTools.myAssert("Івана-Павла", "Івана-Павла/[Іван-Павло]noun:anim:m:v_rod:prop:fname|Івана-Павла/[Іван-Павло]noun:anim:m:v_zna:prop:fname", tokenizer, tagger);
+    
     // handled by different logic
 //    assertNotTagged("напів-люкс");
     assertNotTagged("Малишко-це");
@@ -479,6 +490,8 @@ public class UkrainianTaggerTest {
     assertNotTagged("вовіки-вічні");
     assertNotTagged("юре-юре");
     assertNotTagged("Гірник-спорт");
+    
+    assertNotTagged("Квітку-Основ'яненко"); // правильно: Квітку-Основ'яненка
   }
 
   @Test
@@ -690,7 +703,7 @@ public class UkrainianTaggerTest {
     TestTools.myAssert("сонях-красень", "сонях-красень/[сонях-красень]noun:inanim:m:v_naz|сонях-красень/[сонях-красень]noun:inanim:m:v_zna", tokenizer, tagger);
     TestTools.myAssert("красень-сонях", "красень-сонях/[красень-сонях]noun:inanim:m:v_naz|красень-сонях/[красень-сонях]noun:inanim:m:v_zna", tokenizer, tagger);
     TestTools.myAssert("депутатів-привидів", "депутатів-привидів/[депутат-привид]noun:anim:p:v_rod|депутатів-привидів/[депутат-привид]noun:anim:p:v_zna", tokenizer, tagger);
-    TestTools.myAssert("дівчата-зірочки", "дівчата-зірочки/[дівчина-зірочка]noun:anim:p:v_naz", tokenizer, tagger);
+//    TestTools.myAssert("дівчата-зірочки", "дівчата-зірочки/[дівчина-зірочка]noun:anim:p:v_naz", tokenizer, tagger);
 
     // про місяця-місяченька
 //  TestTools.myAssert("бабці-Австрії",  "", tokenizer, tagger);

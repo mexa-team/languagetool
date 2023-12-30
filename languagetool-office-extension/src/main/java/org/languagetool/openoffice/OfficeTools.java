@@ -84,6 +84,12 @@ public class OfficeTools {
     ONLY_GRAMMAR  //  only grammar check
   }
     
+  public enum LoErrorType {
+    GRAMMAR,      //  grammar error
+    SPELL,        //  spell error
+    BOTH          //  spell and grammar error
+  }
+    
   public static final String EXTENSION_MAINTAINER = "Fred Kruse";
   public static final String LT_SERVICE_NAME = "org.languagetool.openoffice.Main";
   public static final int PROOFINFO_UNKNOWN = 0;
@@ -98,7 +104,7 @@ public class OfficeTools {
   public static final char ZERO_WIDTH_SPACE_CHAR = '\u200B'; // Used to mark footnotes, functions, etc.
   public static final String IGNORE_LANGUAGE = "zxx";     // Used from LT to mark automatic generated text like indexes
   public static final String LOG_LINE_BREAK = System.lineSeparator();  //  LineBreak in Log-File (MS-Windows compatible)
-  public static final int MAX_SUGGESTIONS = 15;           // Number of suggestions maximal shown in LO/OO
+  public static final int MAX_SUGGESTIONS = 25;           // Number of suggestions maximal shown in LO/OO
   public static final int NUMBER_TEXTLEVEL_CACHE = 4;     // Number of caches for matches of text level rules
   public static final String MULTILINGUAL_LABEL = "99-";  // Label added in front of variant to indicate a multilingual paragraph (returned is the main language)
   public static final int CHECK_MULTIPLIKATOR = 40;       //  Number of minimum checks for a first check run

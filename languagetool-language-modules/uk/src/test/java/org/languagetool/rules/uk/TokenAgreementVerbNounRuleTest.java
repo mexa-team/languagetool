@@ -18,23 +18,37 @@
  */
 package org.languagetool.rules.uk;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.languagetool.AnalyzedSentence;
 import org.languagetool.TestTools;
+import org.languagetool.rules.RuleMatch;
 
 public class TokenAgreementVerbNounRuleTest extends AbstractRuleTest {
 
-
   @Before
   public void setUp() throws IOException {
-    rule = new TokenAgreementVerbNounRule(TestTools.getMessages("uk"));
+    rule = new TokenAgreementVerbNounRule(TestTools.getMessages("uk"), lt.getLanguage());
   }
 
+  @Test
+  public void testRuleTPSuggestions() throws IOException {
+    String text = "перераховувати причин";
+    AnalyzedSentence sent = lt.getAnalyzedSentence(text);
+    RuleMatch[] match = rule.match(sent);
+    assertEquals(1, match.length);
+    assertEquals("перераховувати причин", text.substring(match[0].getFromPos(), match[0].getToPos()));
+    assertEquals(Arrays.asList("перераховувати причинам", "перераховувати причинами", "перераховувати причини"), match[0].getSuggestedReplacements());
+  }
+  
+  
   @Test
   public void testRuleTP() throws IOException {
 
@@ -48,6 +62,7 @@ public class TokenAgreementVerbNounRuleTest extends AbstractRuleTest {
     assertHasError("почався справжнісінькій абстинентний синдром");
     assertHasError("досягнув піку");
     assertHasError("сягне піку");
+    assertHasError("сягнувши піку");
     assertHasError("побачив озброєнні формування");
     assertHasError("втрапили халепу");
     assertHasError("доведено світовім досвідом");
@@ -83,6 +98,13 @@ public class TokenAgreementVerbNounRuleTest extends AbstractRuleTest {
     assertHasError("сиплять дуст");
     assertHasError("Охочих навчитися цьому ремеслу");
     assertHasError("поступилася португальці");
+    
+    // complicated case with понад
+//    assertHasError("зайнявся понад двісті справ");
+//    assertEmptyMatch("сидять понад міру");
+//    assertEmptyMatch("тягнуться понад воду");
+//    assertEmptyMatch("прибуло понад мільйон");
+    
     //TODO:
 //    assertHasError("планується провесні церемонію");
 //    assertHasError("Відчувається, що тримаєте рук на пульсі часу");
@@ -194,6 +216,7 @@ public class TokenAgreementVerbNounRuleTest extends AbstractRuleTest {
     assertEmptyMatch("тривав довгих десять раундів");
     
     assertEmptyMatch("лежали всю дорогу");
+    assertEmptyMatch("мріяли все життя");
     
     // v:n + inf
     assertEmptyMatch("сподобалося гуляти");
@@ -205,6 +228,12 @@ public class TokenAgreementVerbNounRuleTest extends AbstractRuleTest {
     assertEmptyMatch("ні сіло ні впало Комітет держбезпеки");
     
     assertEmptyMatch("звичайна, якщо не сказати слабка, людина");
+    
+    assertEmptyMatch("займаючись кожен своїми справами");
+    
+    //TODO: v_rod + збірн v_zna
+//    assertEmptyMatch("поназбиравши купу обіцянок");
+//     assertEmptyMatch("купуючи-продаючи долари");
   }
 
   @Test
@@ -255,9 +284,21 @@ public class TokenAgreementVerbNounRuleTest extends AbstractRuleTest {
     
     assertEmptyMatch("довелося план «Б» застосовувати");
     
+    assertEmptyMatch("сподіваючися щось розтлумачити");
+    assertEmptyMatch("Резюмуючи політик наголосив");
+    //TODO:
+    assertEmptyMatch("пригадує посміхаючись Аскольд");
+    assertHasError("неопізнаний літаючи об’єкт");
+    assertHasError("знищила існуючи бази даних");
+
+    assertEmptyMatch("сидячи ціле життя");
+    assertEmptyMatch("Не претендуючи жодною мірою");
+    
     //TODO: too long
 //    assertEmptyMatch("уміє одним жестом, одним нюансом інтонації сказати");
   }
+  
+  
 
   @Test
   public void testRuleTn_V_Vinf_N() throws IOException {
